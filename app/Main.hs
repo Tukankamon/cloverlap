@@ -1,13 +1,16 @@
 module Main (main) where
 
 import Types
-import Parser ()
+import Parser (getCoursesVector)
+import Logic (overlapInVector)
 
-import Data.Csv
-import qualified Data.ByteString.Lazy as BL
 import qualified Data.Vector as V
 import Data.Time
 import Data.Maybe (fromJust)
+
+classRest, examRest :: Integer
+classRest = 10 -- Minutes
+examRest = 1 -- Days
 
 showDay :: TimeBlock -> String
 showDay block
@@ -30,22 +33,31 @@ printCourse course = putStrLn $
   ++ showTimeBlock (time2 course)
   ++ " and " ++ showTimeBlock (time3 course)
   ++ " with exams on " ++ showTimeBlock (exam1 course) ++ " and "
-  ++ showTimeBlock (exam2 course) ++ ". Will class be attended?: " ++ skip_class course
+  ++ showTimeBlock (exam2 course) ++ ". Will class be attended?: "
+  ++ show (skip_class course)
+  ++ ". Priority: " ++ (show (priority course))
 
 printAllCourses :: (V.Vector Course) -> IO ()
 printAllCourses v = V.forM_ v $ \course -> printCourse course
 
-getCourseVector :: FilePath -> IO (Either String (V.Vector Course))
-getCourseVector file = do
-  csvData <- BL.readFile file
-  case decodeByName csvData of
-    Left err -> return $ Left err
-    Right (_ ,v) -> return $ Right v
+printOverlapInVector :: V.Vector Course -> [Integer] -> IO()
+printOverlapInVector v rests
+  | overlapList == [] =
+    putStrLn "No courses overlap in either classes or exams" 
+  | otherwise = do
+    putStrLn "These following courses overlap in the given input:"
+    mapM_ formatOverlap overlapList
+      where
+      overlapList = overlapInVector v rests
+      formatOverlap :: (Course, Course) -> IO()
+      formatOverlap (course1, course2) = do
+        putStrLn ""
+        printCourse course1
+        printCourse course2
 
 main :: IO ()
 main = do
-  result <- getCourseVector "example.csv"
-  putStrLn "HI"
+  result <- getCoursesVector "example.csv"
   case result of
     Left err -> putStrLn err
-    Right v -> printAllCourses v
+    Right v -> printOverlapInVector v [classRest, examRest]

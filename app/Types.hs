@@ -7,8 +7,13 @@ data Course = Course {
   name :: !String,
   time1 :: !TimeBlock, time2 :: !TimeBlock, time3 :: !TimeBlock,
   exam1 :: !TimeBlock, exam2 :: !TimeBlock,
-  skip_class :: !String
+  skip_class :: !Bool,
+  priority :: !Int
 } deriving Show
+
+-- Just check names
+instance Eq Course where
+  course1 == course2 = name course1 == name course2
 
 data TimeBlock = TimeBlock {
   weekday :: Maybe DayOfWeek,
@@ -19,8 +24,8 @@ data TimeBlock = TimeBlock {
 
 -- Must check that weekday and day are not set at the same time
 instance Ord TimeBlock where
-  compare (TimeBlock w1 d1 s1 _) (TimeBlock w2 d2 s2 _) = 
-    compare (d1, s1, w1) (d2, s2, w2)
+  compare (TimeBlock w1 d1 s1 e1) (TimeBlock w2 d2 s2 e2) = 
+    compare (d1, w1, s1, e1) (d2, w2, s2, e2)
 
 isExam :: TimeBlock -> Maybe Bool
 isExam (TimeBlock _weekday _day _ _)
