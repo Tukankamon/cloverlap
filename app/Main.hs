@@ -27,18 +27,29 @@ showTimeBlock block =
     showDay block ++ " " ++ cut (show (startTime block))
     ++ " - " ++ cut (show (endTime block))
 
-printCourse :: Course -> IO ()
-printCourse course = putStrLn $
+
+-- Bool is verbosity
+printCourse :: Course -> Bool ->  IO ()
+printCourse course False = putStrLn $ 
+  name course
+printCourse course True = putStrLn $
   name course ++ " has classes on " ++ showTimeBlock (time1 course) ++ ", "
   ++ showTimeBlock (time2 course)
-  ++ " and " ++ showTimeBlock (time3 course)
-  ++ " with exams on " ++ showTimeBlock (exam1 course) ++ " and "
-  ++ showTimeBlock (exam2 course) ++ ". Will class be attended?: "
+  ++ maybeTimeBlock (time3 course)
+  ++ " with exams on " ++ showTimeBlock (exam1 course) ++ ", "
+  ++ showTimeBlock (exam2 course)
+  ++ maybeTimeBlock (exam3 course) ++ ". Will class be attended?: "
   ++ show (skip_class course)
   ++ ". Priority: " ++ (show (priority course))
+  where
+    maybeTimeBlock :: Maybe TimeBlock -> String
+    maybeTimeBlock _timeBlock = case _timeBlock of
+      Just tb -> " and " ++ showTimeBlock tb
+      Nothing -> ""
 
-printAllCourses :: (V.Vector Course) -> IO ()
-printAllCourses v = V.forM_ v $ \course -> printCourse course
+printAllCourses :: (V.Vector Course) -> Bool -> IO ()
+printAllCourses vector verbosity =
+  V.forM_ vector $ \course -> printCourse course verbosity
 
 printOverlapInVector :: V.Vector Course -> [Integer] -> IO()
 printOverlapInVector v rests
@@ -49,11 +60,18 @@ printOverlapInVector v rests
     mapM_ formatOverlap overlapList
       where
       overlapList = overlapInVector v rests
-      formatOverlap :: (Course, Course) -> IO()
-      formatOverlap (course1, course2) = do
+      formatOverlap :: (Course, Course, [(TimeBlock, TimeBlock)]) -> IO()
+      formatOverlap (course1, course2, list) = do
         putStrLn ""
-        printCourse course1
-        printCourse course2
+        printCourse course1 False
+        printCourse course2 False
+        putStrLn $ "With the following contradictions:\n" ++ showTimeBlockContr list
+
+showTimeBlockContr :: [(TimeBlock, TimeBlock)] -> String
+showTimeBlockContr [] = "\n"
+showTimeBlockContr (firstPair:list) =
+  showTimeBlock (fst firstPair) ++ " contradicts with: "
+  ++ showTimeBlock (snd firstPair) ++ "\n" ++ showTimeBlockContr list
 
 main :: IO ()
 main = do

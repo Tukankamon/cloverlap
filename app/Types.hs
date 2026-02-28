@@ -3,10 +3,11 @@ module Types where
 import Data.Time
 import Data.Maybe (isJust, isNothing)
 
+-- Consider adding Maybes to the other timeblocks aswell
 data Course = Course {
   name :: !String,
-  time1 :: !TimeBlock, time2 :: !TimeBlock, time3 :: !TimeBlock,
-  exam1 :: !TimeBlock, exam2 :: !TimeBlock,
+  time1 :: !TimeBlock, time2 :: !TimeBlock, time3 :: Maybe TimeBlock,
+  exam1 :: !TimeBlock, exam2 :: !TimeBlock, exam3 :: Maybe TimeBlock,
   skip_class :: !Bool,
   priority :: !Int
 } deriving Show
@@ -21,11 +22,6 @@ data TimeBlock = TimeBlock {
   startTime :: TimeOfDay,
   endTime :: TimeOfDay
 } deriving (Eq, Show)
-
--- Must check that weekday and day are not set at the same time
-instance Ord TimeBlock where
-  compare (TimeBlock w1 d1 s1 e1) (TimeBlock w2 d2 s2 e2) = 
-    compare (d1, w1, s1, e1) (d2, w2, s2, e2)
 
 isExam :: TimeBlock -> Maybe Bool
 isExam (TimeBlock _weekday _day _ _)

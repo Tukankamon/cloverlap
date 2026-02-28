@@ -6,31 +6,43 @@ import Data.Maybe (fromJust)
 import qualified Data.Vector as V
 -- #TODO find a way to make the error handling cleaner cuz there are too many fromJusts
 
--- Returns the pairs that overlap
-overlapInVector :: V.Vector Course -> [Integer] -> [(Course, Course)]
+-- #TODO improve clarity, this returns a single list of tuples containing two courses and a list of the TimeBlock overlaps of those two courses
+overlapInVector :: V.Vector Course->[Integer]->[(Course,Course,[(TimeBlock,TimeBlock)])]
 overlapInVector v rests =
-  removeMirrored [(course1, course2)
-  | course1<-list, course2<-list, course1 /= course2,
-  coursesOverlap course1 course2 rests == True]
+  removeMirroredPair [(course1, course2, overlaps)
+  | course1<-list, course2<-list, course1 /= course2, -- Comparison is by name
+  let overlaps = coursesOverlap course1 course2 rests,
+  overlaps /= [] ]
   where
     list = V.toList v
 
-removeMirrored :: Eq a => [(a,a)] -> [(a,a)]
-removeMirrored list = filter keep list
-  where keep (a,b) = not ((b,a) `elem` list) && a/=b
-
--- This throws away the list of overlaps for now, might need them later
-coursesOverlap :: Course -> Course -> [Integer] -> Bool
-coursesOverlap course1 course2 rests
-  | _classesDontOverlap || (skip_class course1) || (skip_class course2) = False
-  | _examsDontOverlap = False
-  | otherwise = True
+-- BROKEN
+removeMirroredPair :: Eq a => [(a,a,b)] -> [(a,a,b)]
+removeMirroredPair triples = go [] triples
   where
-    classList some_course = [time1 some_course, time2 some_course, time3 some_course]
-    examList some_course = [exam1 some_course, exam2 some_course]
-    _classesDontOverlap =
-      listsOverlap (classList course1) (classList course2) rests == []
-    _examsDontOverlap = listsOverlap (examList course1) (examList course2) rests == []
+    go :: Eq a => [(a,a)] -> [(a,a,b)] -> [(a,a,b)]
+    go _ [] = []
+    go seen ((x,y,z):rest)
+      | x == y = go seen rest
+      | (x,y) `elem` seen || (y,x) `elem` seen = go seen rest
+      | otherwise = (x,y,z) : go ((x,y):seen) rest
+
+coursesOverlap :: Course -> Course -> [Integer] -> [(TimeBlock, TimeBlock)]
+coursesOverlap course1 course2 rests = _classOverlap ++ _examOverlap
+  where
+    classList some_course =
+      case time3 some_course of
+        Just tb-> [time1 some_course, time2 some_course, tb]
+        Nothing-> [time1 some_course, time2 some_course]
+
+    examList some_course = case exam3 some_course of
+      Just tb -> [exam1 some_course, exam2 some_course, tb]
+      Nothing -> [exam1 some_course, exam2 some_course]
+    _classOverlap = case (skip_class course1, skip_class course2) of
+      (True, _) -> []
+      (_, True) -> []
+      (False, False) -> listsOverlap (classList course1) (classList course2) rests
+    _examOverlap = listsOverlap (examList course1) (examList course2) rests
 
 listsOverlap :: [TimeBlock] -> [TimeBlock] -> [Integer] -> [(TimeBlock,TimeBlock)]
 listsOverlap list1 list2 rests =
@@ -42,23 +54,25 @@ timeBlockOverlap _ _ rests
   | length rests /= 2 = Nothing -- rests must be classRest and examRest, no more
 timeBlockOverlap block1 block2 rests =
   case (isExam block1, isExam block2) of
-    (Just True, Just True) -> Just $ examOverlap block1 block2 (rests !! 0)
-    (Just False, Just False) -> Just $ classOverlap block1 block2 (rests !! 1)
+    (Just True, Just True) -> Just $ examOverlap block1 block2 _examRest
+    (Just False, Just False) -> Just $ classOverlap block1 block2 _classRest
     _ -> Nothing
+    where
+      _classRest = (rests !! 0)
+      _examRest = (rests !! 1)
 
 classOverlap :: TimeBlock -> TimeBlock -> Integer -> Bool
 classOverlap block1 block2 minRest =
   timeDiff > restSeconds && (weekday block1) == (weekday block2)
   where
-    -- Probably too many helpers here
-    comesFirst = minimum [block1, block2] -- Defined in Types.hs
-    comesLast = maximum [block1, block2]
-    firstFinish = endTime comesFirst
-    lastStart = startTime comesLast
+    firstFinish, lastStart :: TimeOfDay
+    firstFinish = minimum [endTime block1, endTime block2]
+    lastStart = maximum [startTime block1, startTime block2]
     restSeconds = fromIntegral (minRest * 60)
     timeDiff = (timeOfDayToTime firstFinish) - (timeOfDayToTime lastStart)
 
 -- #TODO allow for exams on the same day but different hours
 examOverlap :: TimeBlock -> TimeBlock -> Integer -> Bool
 examOverlap block1 block2 dayRest =
-  diffDays (fromJust $ day block1) (fromJust $ day block2) < dayRest
+  abs (diffDays (fromJust $ day block1) (fromJust $ day block2)) < dayRest
+

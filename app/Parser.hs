@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-} -- Important
 {-# OPTIONS_GHC -Wno-orphans #-} -- If not would have to move a lot over to Types
+
 module Parser (getCoursesVector) where
 
 import Types
@@ -19,6 +20,7 @@ instance FromNamedRecord Course where
     <*> r .: "time3"
     <*> r .: "exam1"
     <*> r .: "exam2"
+    <*> r .: "exam3"
     <*> r .: "skip_class"
     <*> r .: "priority"
 
@@ -27,13 +29,13 @@ instance FromField TimeBlock where
     let ws = words $ BS.unpack bs
     in case parseTimeBlock ws of
       Just block -> pure block
-      Nothing -> fail "Cannot parse time block"
+      Nothing -> fail ("Cannot parse time block: " ++ show ws ++ "\n")
 
 instance FromField Bool where
   parseField b
     | b == "true" = pure True
     | b == "false" = pure False
-    | otherwise = fail "Cannot parse bool"
+    | otherwise = fail ("Cannot parse bool" ++ show b)
 
 getCoursesVector :: FilePath -> IO (Either String (V.Vector Course))
 getCoursesVector file = do
