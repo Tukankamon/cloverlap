@@ -2,7 +2,7 @@ module Main (main) where
 
 import Types
 import Parser (getCoursesVector)
-import Logic (overlapInVector)
+import Overlap (overlapInVector)
 
 import qualified Data.Vector as V
 import Data.Time
@@ -75,7 +75,7 @@ showTimeBlockContr (firstPair:list) =
 
 main :: IO ()
 main = do
-  result <- getCoursesVector "example.csv"
+  result <- getCoursesVector "private.csv"
   case result of
     Left err -> putStrLn err
     Right v -> printOverlapInVector v [classRest, examRest]

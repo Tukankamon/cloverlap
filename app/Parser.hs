@@ -15,6 +15,7 @@ import Data.Maybe (isJust)
 instance FromNamedRecord Course where
   parseNamedRecord r = Course
     <$> r .: "name"
+    <*> r .: "semester"
     <*> r .: "time1"
     <*> r .: "time2"
     <*> r .: "time3"
@@ -70,6 +71,12 @@ parseExam _ = Nothing
 parseDay :: String -> Maybe Day
 parseDay s = parseTimeM True defaultTimeLocale "%d/%m" s
 
+parseTimeOfDay :: String -> Maybe TimeOfDay
+parseTimeOfDay s = parseTimeM True defaultTimeLocale "%H:%M" s
+
+startsWithWeekDay :: String -> Bool
+startsWithWeekDay s = isJust $ parseDayAbbr s
+
 parseDayAbbr :: String -> Maybe DayOfWeek
 parseDayAbbr s
   | s == "Mon" = Just Monday
@@ -80,9 +87,3 @@ parseDayAbbr s
   | s == "Sat" = Just Saturday
   | s == "Sun" = Just Sunday
   | otherwise = Nothing
-
-parseTimeOfDay :: String -> Maybe TimeOfDay
-parseTimeOfDay s = parseTimeM True defaultTimeLocale "%H:%M" s
-
-startsWithWeekDay :: String -> Bool
-startsWithWeekDay s = isJust $ parseDayAbbr s

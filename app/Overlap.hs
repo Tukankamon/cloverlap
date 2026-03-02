@@ -1,10 +1,10 @@
-module Logic (overlapInVector) where
+module Overlap (overlapInVector) where
 
 import Types
 import Data.Time
 import Data.Maybe (fromJust)
 import qualified Data.Vector as V
--- #TODO find a way to make the error handling cleaner cuz there are too many fromJusts
+-- #TODO find a way to make the error handling cleaner
 
 -- #TODO improve clarity, this returns a single list of tuples containing two courses and a list of the TimeBlock overlaps of those two courses
 overlapInVector :: V.Vector Course->[Integer]->[(Course,Course,[(TimeBlock,TimeBlock)])]
@@ -16,7 +16,6 @@ overlapInVector v rests =
   where
     list = V.toList v
 
--- BROKEN
 removeMirroredPair :: Eq a => [(a,a,b)] -> [(a,a,b)]
 removeMirroredPair triples = go [] triples
   where
@@ -27,6 +26,7 @@ removeMirroredPair triples = go [] triples
       | (x,y) `elem` seen || (y,x) `elem` seen = go seen rest
       | otherwise = (x,y,z) : go ((x,y):seen) rest
 
+-- #TODO make this function more readable
 coursesOverlap :: Course -> Course -> [Integer] -> [(TimeBlock, TimeBlock)]
 coursesOverlap course1 course2 rests = _classOverlap ++ _examOverlap
   where
