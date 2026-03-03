@@ -1,7 +1,6 @@
 module Main (main) where
 
 import Parser (getCoursesVector)
-import Logic.Optimize (bestSchedule)
 import Print (showBestSchedule)
 import qualified Data.Vector as V
 import Options.Applicative
@@ -11,7 +10,8 @@ data Args = Args {
   classRest :: Integer,
   examRest :: Integer,
   maxClasses :: Integer,
-  minClasses :: Integer
+  minClasses :: Integer,
+  semester :: Int
 }
 
 flags :: Parser Args
@@ -46,6 +46,12 @@ flags = Args
     <> showDefault
     <> value 6
     <> metavar "INTEGER" )
+  <*> option auto
+    ( long "semester"
+    <> short 's'
+    <> help "Semester to analyze (1 or 2)"
+    <> value 1
+    <> metavar "INT" )
 
 -- #TODO improve function name
 opts :: ParserInfo Args
@@ -64,4 +70,4 @@ main = do
       let
         restValues = [classRest args, examRest args, maxClasses args, minClasses args]
       --printOverlapInList (V.toList v) defaultRest
-      putStrLn $ showBestSchedule (verbose args) $ bestSchedule (V.toList v) restValues
+      putStrLn $ showBestSchedule (V.toList v) (semester args) restValues (verbose args)

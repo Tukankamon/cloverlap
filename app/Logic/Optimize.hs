@@ -7,13 +7,13 @@ import Data.List
 
 -- #TODO check for multiple possible results
 -- #TODO dont be so strict, if the conditions dont return any then loosen them a bit
-bestSchedule :: Schedule -> [Integer] -> Maybe Schedule
-bestSchedule set rests
+bestSchedule :: Schedule -> Int -> [Integer] -> Maybe Schedule
+bestSchedule set _semester rests
   | list == [] = Nothing
   | length rests /= 4 = Nothing --should be: classRest, examRest, maxClasses, minClasses
   | otherwise = Just $ head $ sortBy downtimeSort list
   where
-    list = generateAllCombinations set rests
+    list = generateAllCombinations set _semester rests
     -- Add more conditions as needed
     downtimeSort :: Schedule -> Schedule -> Ordering
     downtimeSort s1 s2
@@ -22,8 +22,8 @@ bestSchedule set rests
       | weekDowntimePerClass s1 <= weekDowntimePerClass s2 = GT
       | otherwise = LT
 
-generateAllCombinations :: Schedule -> [Integer] -> [Schedule]
-generateAllCombinations list rests =
+generateAllCombinations :: Schedule -> Int -> [Integer] -> [Schedule]
+generateAllCombinations list _semester rests =
   let
     classRest = rests !! 0
     examRest = rests !! 1
@@ -33,6 +33,8 @@ generateAllCombinations list rests =
     [ pick | pick <- subsequences list,
     length pick <= fromInteger maxClasses,
     computeAttendance pick >= minClasses,
+    -- There is probably a better way to do the following
+    [ course | course<-pick, semester course == _semester]  == pick,
     overlapInList pick [classRest,examRest] == []]
 
 computePriority :: Schedule -> Integer
@@ -61,21 +63,14 @@ computeDowntime _day list = case getDaySchedule _day list of
     let
       _first = head _schedule
       _last = last _schedule
-      occupiedTime = blockListLength _schedule
-    in diffTimeToPicoseconds $ timeOfDayToTime (endTime _last)
-    - timeOfDayToTime (startTime _first) - occupiedTime
-
-
-getDaySchedule :: DayOfWeek -> Schedule -> [TimeBlock]
-getDaySchedule _day list =
-  sort $ [block | course<-list,
-  block<-getBlockFromCourse course, Just _day == weekday block ]
+    in diffTimeToPicoseconds $
+      diffTimeOfDay (endTime _last) (startTime _first) - blockListLength _schedule
 
 blockListLength :: [TimeBlock] -> DiffTime
 blockListLength [] = 0
-blockListLength (first:rest) = (blockLength first) + blockListLength rest
+blockListLength (first:rest) =
+  (diffTimeOfDay (endTime first) (startTime first)) + blockListLength rest
 
--- Maybe could have this directly in blockListLength
-blockLength :: TimeBlock -> DiffTime
-blockLength block =
-  timeOfDayToTime (endTime block) - timeOfDayToTime(startTime block)
+-- Library doesnt already have one
+diffTimeOfDay :: TimeOfDay -> TimeOfDay -> DiffTime
+diffTimeOfDay t1 t2 = timeOfDayToTime t1 - timeOfDayToTime t2

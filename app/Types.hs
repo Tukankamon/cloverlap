@@ -1,6 +1,7 @@
 module Types where
 
 import Data.Time
+import Data.Sort
 import Data.Maybe
 
 -- Consider adding Maybes to the other timeblocks aswell
@@ -40,6 +41,11 @@ getDaysFromCourse course =
   catMaybes [weekday block | block<-blocks]
   where
     blocks = [ time1 course, time2 course ] ++ maybeToList (time3 course)
+
+getDaySchedule :: DayOfWeek -> Schedule -> [TimeBlock]
+getDaySchedule _day list =
+  sort $ [block | course<-list,
+  block<-getBlockFromCourse course, Just _day == weekday block ]
 
 -- #TODO make it so it is impossible for a timeblock to be both
 isExam :: TimeBlock -> Maybe Bool

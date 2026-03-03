@@ -17,3 +17,4 @@ There are a lot of suggestions in the code tagged with `#TODO` for more things t
     - [x] Priority indicator for when there is a max allowed classes
 - [ ] Add user input for rest times and amount of classes
 - [ ] Add something like a TUI to make user input of the csv easier
+    - [ ] Or even better GUI with GTK (has haskell integration)

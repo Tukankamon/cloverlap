@@ -2,6 +2,7 @@ module Print (showBestSchedule, showAllCourses, printOverlapInList) where
 
 import Types
 import Logic.Overlap (overlapInList)
+import Logic.Optimize (bestSchedule)
 import Data.Time
 import Data.Maybe (fromJust)
 
@@ -9,8 +10,7 @@ showDay :: TimeBlock -> String
 showDay block
   | isExam block == Just False = take 3 (show $ fromJust $ weekday block)
   | isExam block == Just True =
-    formatTime defaultTimeLocale "%d/%m" (fromJust $ day block)
-  | otherwise = "\nERROR: NEITHER CLASS NOR EXAM IN INPUT\n"
+    formatTime defaultTimeLocale "%d/%m" (fromJust $ day block) | otherwise = "\nERROR: NEITHER CLASS NOR EXAM IN INPUT\n"
 
 -- Take 3 is to only have abbr like Mon for monday
 showTimeBlock :: TimeBlock -> String
@@ -19,6 +19,10 @@ showTimeBlock block =
   in
     showDay block ++ " " ++ cut (show (startTime block))
     ++ " - " ++ cut (show (endTime block))
+
+showTimeBlockList :: [TimeBlock] -> String
+showTimeBlockList [] = ""
+showTimeBlockList (first:rest) = showTimeBlock first ++ "\n" ++ showTimeBlockList rest
 
 -- Bool is verbosity
 showCourse :: Course -> Bool -> String
@@ -66,8 +70,17 @@ showTimeBlockContr (firstPair:list) =
   showTimeBlock (fst firstPair) ++ " contradicts with: "
   ++ showTimeBlock (snd firstPair) ++ "\n" ++ showTimeBlockContr list
 
-showBestSchedule :: Bool -> Maybe Schedule-> String
-showBestSchedule _ Nothing=
-  "Could not find an optimal schedule with the input conditions"
-showBestSchedule verbose (Just s) = "This is the most optimal configuration:\n"
+showBestSchedule :: Schedule -> Int -> [Integer] -> Bool -> String
+showBestSchedule set _semester rests verbose =
+  case bestSchedule set _semester rests of
+  Nothing -> "Could not find an optimal schedule with the input conditions"
+  (Just s) -> "This is the most optimal configuration:\n"
     ++ (showAllCourses s verbose) ++ "It has " ++ show (length s) ++ " total classes\n"
+
+showDaySchedule :: DayOfWeek -> Schedule -> String
+showDaySchedule _day list =
+  "The schedule for " ++ show _day ++ " is:\n"
+  ++ (showTimeBlockList $ getDaySchedule _day list) ++ "\n"
+
+--showWeekSchedule :: Schedule -> String
+--showWeekSchedule
