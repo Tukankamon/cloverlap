@@ -1,8 +1,26 @@
 module Optimize where
 
 import Types
+import Overlap
 import Data.Time
-import Data.Sort (sort)
+import Data.List
+import qualified Data.Vector as V
+
+-- The maxClasses -2 is a placeholder, should make it a variable in the future
+generateAllCombinations :: V.Vector Course -> [Integer] -> Maybe [[Course]]
+generateAllCombinations v list =
+  let
+    classRest = list !! 0
+    examRest = list !! 1
+    maxClasses = list !! 2
+  in case length list of
+    3 -> Just [ picks | picks <- subsequences (V.toList v),
+      length picks <= fromInteger maxClasses,
+      length picks >= fromInteger maxClasses - 2,
+      overlapInList picks [classRest,examRest] == []]
+    _ -> Nothing
+      where
+
 
 -- I cant find any other function to return something other than Pico seconds
 computeDowntime :: DayOfWeek -> [TimeBlock] -> Integer

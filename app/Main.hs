@@ -2,7 +2,8 @@ module Main (main) where
 
 import Types
 import Parser (getCoursesVector)
-import Overlap (overlapInVector)
+import Overlap (overlapInList)
+import Optimize
 
 import qualified Data.Vector as V
 import Data.Time
@@ -51,21 +52,22 @@ printAllCourses :: (V.Vector Course) -> Bool -> IO ()
 printAllCourses vector verbosity =
   V.forM_ vector $ \course -> printCourse course verbosity
 
-printOverlapInVector :: V.Vector Course -> [Integer] -> IO()
-printOverlapInVector v rests
+printOverlapInList :: [Course] -> [Integer] -> IO()
+printOverlapInList list rests
   | overlapList == [] =
     putStrLn "No courses overlap in either classes or exams" 
   | otherwise = do
     putStrLn "These following courses overlap in the given input:"
     mapM_ formatOverlap overlapList
       where
-      overlapList = overlapInVector v rests
+      overlapList = overlapInList list rests
       formatOverlap :: (Course, Course, [(TimeBlock, TimeBlock)]) -> IO()
-      formatOverlap (course1, course2, list) = do
+      formatOverlap (course1, course2, contradictions) = do
         putStrLn ""
         printCourse course1 False
         printCourse course2 False
-        putStrLn $ "With the following contradictions:\n" ++ showTimeBlockContr list
+        putStrLn $
+          "With the following contradictions:\n" ++ showTimeBlockContr contradictions
 
 showTimeBlockContr :: [(TimeBlock, TimeBlock)] -> String
 showTimeBlockContr [] = "\n"
@@ -78,4 +80,4 @@ main = do
   result <- getCoursesVector "private.csv"
   case result of
     Left err -> putStrLn err
-    Right v -> printOverlapInVector v [classRest, examRest]
+    Right v -> printOverlapInList (V.toList v) [classRest, examRest]
