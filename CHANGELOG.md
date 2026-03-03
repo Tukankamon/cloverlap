@@ -6,6 +6,7 @@
 
 # TODO
 There are a lot of suggestions in the code tagged with `#TODO` for more things to do
+- [ ] Improve formatting in verbose mode
 - [ ] Add user input
 - [ ] Be able to have null if you dont need 3 class periods
 - [ ] Add the actual logic
@@ -15,3 +16,4 @@ There are a lot of suggestions in the code tagged with `#TODO` for more things t
     - [x] Minimize downtime between classes
     - [x] Priority indicator for when there is a max allowed classes
 - [ ] Add user input for rest times and amount of classes
+- [ ] Add something like a TUI to make user input of the csv easier
