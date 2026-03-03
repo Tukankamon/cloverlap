@@ -48,7 +48,7 @@ listsOverlap list1 list2 rests =
 
 timeBlockOverlap :: TimeBlock -> TimeBlock -> [Integer] -> Maybe Bool
 timeBlockOverlap _ _ rests
-  | length rests /= 2 = Nothing -- rests must be classRest and examRest, no more
+  | length rests /= 4 = Nothing
 timeBlockOverlap block1 block2 rests =
   case (isExam block1, isExam block2) of
     (Just True, Just True) -> Just $ examOverlap block1 block2 _examRest

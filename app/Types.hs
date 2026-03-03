@@ -10,12 +10,14 @@ data Course = Course {
   time1 :: !TimeBlock, time2 :: !TimeBlock, time3 :: Maybe TimeBlock,
   exam1 :: !TimeBlock, exam2 :: !TimeBlock, exam3 :: Maybe TimeBlock,
   skip_class :: !Bool,
-  priority :: !Int
+  priority :: !Integer
 } deriving Show
 
 -- Just check names
 instance Eq Course where
   course1 == course2 = name course1 == name course2
+
+type Schedule = [Course]
 
 data TimeBlock = TimeBlock {
   weekday :: Maybe DayOfWeek,
