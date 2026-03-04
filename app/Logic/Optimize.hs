@@ -7,13 +7,12 @@ import Data.List
 
 -- #TODO check for multiple possible results
 -- #TODO dont be so strict, if the conditions dont return any then loosen them a bit
-bestSchedule :: Schedule -> Int -> [Integer] -> Maybe Schedule
-bestSchedule set _semester rests
+bestSchedule :: Schedule -> Args -> Maybe Schedule
+bestSchedule set args
   | list == [] = Nothing
-  | length rests /= 4 = Nothing --should be: classRest, examRest, maxClasses, minClasses
   | otherwise = Just $ head $ sortBy downtimeSort list
   where
-    list = generateAllCombinations set _semester rests
+    list = generateAllCombinations set args
     -- Add more conditions as needed
     downtimeSort :: Schedule -> Schedule -> Ordering
     downtimeSort s1 s2
@@ -22,20 +21,14 @@ bestSchedule set _semester rests
       | weekDowntimePerClass s1 <= weekDowntimePerClass s2 = GT
       | otherwise = LT
 
-generateAllCombinations :: Schedule -> Int -> [Integer] -> [Schedule]
-generateAllCombinations list _semester rests =
-  let
-    classRest = rests !! 0
-    examRest = rests !! 1
-    maxClasses = rests !! 2
-    minClasses = rests !! 3
-  in
+generateAllCombinations :: Schedule -> Args -> [Schedule]
+generateAllCombinations list args =
     [ pick | pick <- subsequences list,
-    length pick <= fromInteger maxClasses,
-    computeAttendance pick >= minClasses,
+    length pick <= fromInteger (maxClasses args),
+    computeAttendance pick >= minClasses args,
     -- There is probably a better way to do the following
-    [ course | course<-pick, semester course == _semester]  == pick,
-    overlapInList pick [classRest,examRest] == []]
+    [ course | course<-pick, semester course == trimester args]  == pick,
+    overlapInList pick args == []]
 
 computePriority :: Schedule -> Integer
 computePriority schedule = sum [priority course | course<-schedule ]

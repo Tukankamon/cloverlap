@@ -1,4 +1,9 @@
-module Print (showBestSchedule, showAllCourses, printOverlapInList) where
+module Print
+  (showSchedule,
+  showAllCourses,
+  printOverlapInList,
+  showWeekSchedule)
+where
 
 import Types
 import Logic.Overlap (overlapInList)
@@ -47,15 +52,15 @@ showAllCourses [] _ = ""
 showAllCourses (first:rest) verbosity =
   (showCourse first verbosity) ++ "\n" ++ showAllCourses rest verbosity
 
-printOverlapInList :: [Course] -> [Integer] -> IO()
-printOverlapInList list rests
+printOverlapInList :: [Course] -> Args -> IO()
+printOverlapInList list args
   | overlapList == [] =
     putStrLn "No courses overlap in either classes or exams" 
   | otherwise = do
     putStrLn "These following courses overlap in the given input:"
     mapM_ formatOverlap overlapList
       where
-      overlapList = overlapInList list rests
+      overlapList = overlapInList list args
       formatOverlap :: (Course, Course, [(TimeBlock, TimeBlock)]) -> IO()
       formatOverlap (course1, course2, contradictions) = do
         putStrLn ""
@@ -70,17 +75,22 @@ showTimeBlockContr (firstPair:list) =
   showTimeBlock (fst firstPair) ++ " contradicts with: "
   ++ showTimeBlock (snd firstPair) ++ "\n" ++ showTimeBlockContr list
 
-showBestSchedule :: Schedule -> Int -> [Integer] -> Bool -> String
-showBestSchedule set _semester rests verbose =
-  case bestSchedule set _semester rests of
-  Nothing -> "Could not find an optimal schedule with the input conditions"
+-- IDk if this should do the computing or if the output of bestSchedule should be passed to this in main
+showSchedule :: Schedule -> Args -> String
+showSchedule set args =
+  case bestSchedule set args of
+  Nothing ->
+    "Could not find an optimal schedule with the input conditions:\n" ++ show args
   (Just s) -> "This is the most optimal configuration:\n"
-    ++ (showAllCourses s verbose) ++ "It has " ++ show (length s) ++ " total classes\n"
+    ++ (showAllCourses s (verbose args)) ++ "It has " ++ show (length s) ++ " total classes\n"
 
 showDaySchedule :: DayOfWeek -> Schedule -> String
-showDaySchedule _day list =
-  "The schedule for " ++ show _day ++ " is:\n"
-  ++ (showTimeBlockList $ getDaySchedule _day list) ++ "\n"
+showDaySchedule _day list = case getDaySchedule _day list of
+  [] -> "No classes on " ++ show _day ++ "\n"
+  blocklist ->
+    "The schedule for " ++ show _day ++ " is:\n" ++ showTimeBlockList blocklist ++ "\n"
 
---showWeekSchedule :: Schedule -> String
---showWeekSchedule
+showWeekSchedule :: Schedule -> String
+showWeekSchedule schedule =
+  unwords [ showDaySchedule _day schedule | _day<-[Monday ..Sunday] ]
+

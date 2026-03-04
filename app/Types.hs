@@ -53,3 +53,12 @@ isExam (TimeBlock _weekday _day _ _)
   | isNothing _weekday && isJust _day = Just True
   | isJust _weekday && isNothing _day = Just False
   | otherwise = Nothing
+
+data Args = Args {
+  verbose :: Bool,
+  classRest :: Integer,
+  examRest :: Integer,
+  maxClasses :: Integer,
+  minClasses :: Integer,
+  trimester :: Int -- so as not to overlap with semester
+} deriving (Show)

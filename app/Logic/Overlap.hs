@@ -6,11 +6,11 @@ import Data.Maybe (fromJust)
 -- #TODO find a way to make the error handling cleaner
 
 -- #TODO improve clarity, this returns a single list of tuples containing two courses and a list of the TimeBlock overlaps of those two courses
-overlapInList :: [Course]->[Integer]->[(Course,Course,[(TimeBlock,TimeBlock)])]
-overlapInList list rests =
+overlapInList :: [Course]-> Args ->[(Course,Course,[(TimeBlock,TimeBlock)])]
+overlapInList list args =
   removeMirroredPair [(course1, course2, overlaps)
   | course1<-list, course2<-list, course1 /= course2, -- Comparison is by name
-  let overlaps = coursesOverlap course1 course2 rests,
+  let overlaps = coursesOverlap course1 course2 args,
   overlaps /= [] ]
 
 removeMirroredPair :: Eq a => [(a,a,b)] -> [(a,a,b)]
@@ -24,8 +24,8 @@ removeMirroredPair triples = go [] triples
       | otherwise = (x,y,z) : go ((x,y):seen) rest
 
 -- #TODO make this function more readable
-coursesOverlap :: Course -> Course -> [Integer] -> [(TimeBlock, TimeBlock)]
-coursesOverlap course1 course2 rests = _classOverlap ++ _examOverlap
+coursesOverlap :: Course -> Course -> Args -> [(TimeBlock, TimeBlock)]
+coursesOverlap course1 course2 args = _classOverlap ++ _examOverlap
   where
     classList some_course =
       case time3 some_course of
@@ -38,25 +38,20 @@ coursesOverlap course1 course2 rests = _classOverlap ++ _examOverlap
     _classOverlap = case (skip_class course1, skip_class course2) of
       (True, _) -> []
       (_, True) -> []
-      (False, False) -> listsOverlap (classList course1) (classList course2) rests
-    _examOverlap = listsOverlap (examList course1) (examList course2) rests
+      (False, False) -> listsOverlap (classList course1) (classList course2) args
+    _examOverlap = listsOverlap (examList course1) (examList course2) args
 
-listsOverlap :: [TimeBlock] -> [TimeBlock] -> [Integer] -> [(TimeBlock,TimeBlock)]
-listsOverlap list1 list2 rests =
+listsOverlap :: [TimeBlock] -> [TimeBlock] -> Args -> [(TimeBlock,TimeBlock)]
+listsOverlap list1 list2 args =
   [ (block1, block2) | block1<-list1, block2<-list2,
-  timeBlockOverlap block1 block2 rests == Just True]
+  timeBlockOverlap block1 block2 args == Just True]
 
-timeBlockOverlap :: TimeBlock -> TimeBlock -> [Integer] -> Maybe Bool
-timeBlockOverlap _ _ rests
-  | length rests /= 4 = Nothing
-timeBlockOverlap block1 block2 rests =
+timeBlockOverlap :: TimeBlock -> TimeBlock -> Args -> Maybe Bool
+timeBlockOverlap block1 block2 args =
   case (isExam block1, isExam block2) of
-    (Just True, Just True) -> Just $ examOverlap block1 block2 _examRest
-    (Just False, Just False) -> Just $ classOverlap block1 block2 _classRest
+    (Just True, Just True) -> Just $ examOverlap block1 block2 (examRest args)
+    (Just False, Just False) -> Just $ classOverlap block1 block2 (classRest args)
     _ -> Nothing
-    where
-      _classRest = (rests !! 0)
-      _examRest = (rests !! 1)
 
 classOverlap :: TimeBlock -> TimeBlock -> Integer -> Bool
 classOverlap block1 block2 minRest =

@@ -1,18 +1,11 @@
 module Main (main) where
 
 import Parser (getCoursesVector)
-import Print (showBestSchedule)
+import Print (showSchedule, showWeekSchedule)
 import qualified Data.Vector as V
 import Options.Applicative
-
-data Args = Args {
-  verbose :: Bool,
-  classRest :: Integer,
-  examRest :: Integer,
-  maxClasses :: Integer,
-  minClasses :: Integer,
-  semester :: Int
-}
+import Logic.Optimize (bestSchedule)
+import Types
 
 flags :: Parser Args
 flags = Args
@@ -67,7 +60,9 @@ main = do
   case result of
     Left err -> putStrLn err
     Right v -> do
-      let
-        restValues = [classRest args, examRest args, maxClasses args, minClasses args]
+      let best_schedule = bestSchedule (V.toList v) args
       --printOverlapInList (V.toList v) defaultRest
-      putStrLn $ showBestSchedule (V.toList v) (semester args) restValues (verbose args)
+      putStrLn $ showSchedule (V.toList v) args
+      case best_schedule of
+        Just s -> putStrLn $ showWeekSchedule s
+        Nothing -> putStrLn "Could not show the week schedule"
