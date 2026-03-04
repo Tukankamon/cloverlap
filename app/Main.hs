@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Parser (getCoursesVector)
-import Print (showSchedule, showWeekSchedule)
+import Print (showSchedule, showWeekSchedule, showOverlapInList)
 import qualified Data.Vector as V
 import Options.Applicative
 import Logic.Optimize (bestSchedule)
@@ -60,17 +60,35 @@ opts = info (flags <**> helper)
   <> progDesc "Compute the most optimal class schedule from a list of courses"
   <> header "I dont know what to put here" )
 
+looser :: Args -> Maybe Args
+looser (Args f v cRest eRest max min s)
+  | cRest == 0 && eRest == 0 = Nothing
+  | otherwise = Just $ Args f v newCRest newERest newMax newMin s
+  where
+  newCRest = cRest `div` 2
+  newERest = eRest `div` 2
+  newMin = min -1
+  newMax = max +1
+
+-- #TODO better function name
+mainIsh :: Schedule -> Args -> IO()
+mainIsh list args = do
+  putStrLn $ showSchedule list args
+  let best_schedule = bestSchedule list args
+  case best_schedule of
+    [] -> do
+      putStrLn $ "Could not show the week schedule, trying with looser args"
+      case looser args of
+        Nothing -> putStrLn "Args can't be any looser"
+        Just a -> mainIsh list a
+    -- #TODO print all not just head
+    s -> putStrLn $ showWeekSchedule (head s) args
+
 main :: IO ()
 main = do
   args <- execParser opts
   result <- getCoursesVector (input args)
   case result of
     Left err -> putStrLn err
-    Right v -> do
-      let best_schedule = bestSchedule (V.toList v) args
+    Right v -> mainIsh (V.toList v) args
       --printOverlapInList (V.toList v) defaultRest
-      putStrLn $ showSchedule (V.toList v) args
-      case best_schedule of
-        [] -> putStrLn "Could not show the week schedule"
-        -- #TODO print all not just head
-        list -> putStrLn $ showWeekSchedule (head list) args

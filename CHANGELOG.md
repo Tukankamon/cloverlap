@@ -6,6 +6,7 @@
 
 # TODO
 There are a lot of suggestions in the code tagged with `#TODO` for more things to do
+- [ ] For some reason doesnt show some posibilities that can be obtained (all priority 1 in private.csv
 - [ ] Adress performance issues on larger sets (use of subsequences in Optimize.hs)
 - [ ] Make distinct examblocks and classblocks
 - [ ] Improve formatting in verbose mode

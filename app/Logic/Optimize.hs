@@ -9,9 +9,12 @@ import Data.List
 -- #TODO dont be so strict, if the conditions dont return any then loosen them a bit
 bestSchedule :: Schedule -> Args -> [Schedule]
 bestSchedule [] _ = []
-bestSchedule set args = [maximumBy downtimeOrdering $ generateAllCombinations set args]
+bestSchedule set args = case generateAllCombinations set args of
+  [] -> []
+  list -> [maximumBy downtimeOrdering list]
   where
     -- Add more conditions as needed
+    -- #TODO make it so it is not so ordered in importance by priority, downtime, length rather take all of them into account at once
     downtimeOrdering :: Schedule -> Schedule -> Ordering
     downtimeOrdering s1 s2
       | computePriority s1 < computePriority s2 = GT
