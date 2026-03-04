@@ -1,7 +1,7 @@
 module Print
   (showSchedule,
   showAllCourses,
-  printOverlapInList,
+  showOverlapInList,
   showWeekSchedule)
 where
 
@@ -52,22 +52,20 @@ showAllCourses [] _ = ""
 showAllCourses (first:rest) verbosity =
   (showCourse first verbosity) ++ "\n" ++ showAllCourses rest verbosity
 
-printOverlapInList :: [Course] -> Args -> IO()
-printOverlapInList list args
+showOverlapInList :: Schedule -> Args -> String
+showOverlapInList list args
   | overlapList == [] =
-    putStrLn "No courses overlap in either classes or exams" 
-  | otherwise = do
-    putStrLn "These following courses overlap in the given input:"
-    mapM_ formatOverlap overlapList
+    "No courses overlap in either classes or exams" 
+  | otherwise =
+    "These following courses overlap in the given input:\n" ++
+    concatMap formatOverlap overlapList
       where
       overlapList = overlapInList list args
-      formatOverlap :: (Course, Course, [(TimeBlock, TimeBlock)]) -> IO()
-      formatOverlap (course1, course2, contradictions) = do
-        putStrLn ""
-        putStrLn $ showCourse course1 False
-        putStrLn $ showCourse course2 False
-        putStrLn $
-          "With the following contradictions:\n" ++ showTimeBlockContr contradictions
+      formatOverlap :: (Course, Course, [(TimeBlock, TimeBlock)]) -> String
+      formatOverlap (course1, course2, contradictions) =
+        showCourse course1 False ++ ", " ++ showCourse course2 False
+        ++ " with the following contradictions:\n"
+        ++ showTimeBlockContr contradictions
 
 showTimeBlockContr :: [(TimeBlock, TimeBlock)] -> String
 showTimeBlockContr [] = ""
@@ -78,19 +76,25 @@ showTimeBlockContr (firstPair:list) =
 -- IDk if this should do the computing or if the output of bestSchedule should be passed to this in main
 showSchedule :: Schedule -> Args -> String
 showSchedule set args =
-  case bestSchedule set args of
-  Nothing ->
-    "Could not find an optimal schedule with the input conditions:\n" ++ show args
-  (Just s) -> "This is the most optimal configuration:\n"
-    ++ (showAllCourses s (verbose args)) ++ "It has " ++ show (length s) ++ " total classes\n"
+  let errString = "Could not find an optimal schedule with the input conditions\n" in
+  case (bestSchedule set args, (verbose args)) of
+  ([], False) -> errString
+  -- "The best" in terms of downtime not overlapping #TODO
+  ([], True) -> errString ++ "This is the best that can be found:\n"
+    ++ showOverlapInList set args
+  (list, _) -> (showAllCourses s (verbose args)) ++ "It has "
+    ++ show (length s) ++ " total classes with "
+    ++ show (length (filter (not . skip_class) s)) ++ " to be attended\n"
+    where s = head list -- #TODO print all not just head
 
-showDaySchedule :: DayOfWeek -> Schedule -> String
-showDaySchedule _day list = case getDaySchedule _day list of
-  [] -> "No classes on " ++ show _day ++ "\n"
-  blocklist ->
-    "The schedule for " ++ show _day ++ " is:\n" ++ showTimeBlockList blocklist ++ "\n"
+showDaySchedule :: DayOfWeek -> Schedule -> Args -> String
+showDaySchedule _day list args
+  | list == [] || daily_courses == [] = "No classes on " ++ show _day ++ "\n"
+  | otherwise = "The schedule for " ++ show _day ++ " is:\n"
+  ++ showAllCourses daily_courses (verbose args) ++ "\n"
+  where daily_courses = getCoursesFromDay _day list
 
-showWeekSchedule :: Schedule -> String
-showWeekSchedule schedule =
-  unwords [ showDaySchedule _day schedule | _day<-[Monday ..Sunday] ]
+showWeekSchedule :: Schedule -> Args -> String
+showWeekSchedule schedule args =
+  unwords [ showDaySchedule _day schedule args | _day<-[Monday ..Sunday] ]
 

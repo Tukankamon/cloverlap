@@ -2,7 +2,6 @@ module Logic.Overlap (overlapInList) where
 
 import Types
 import Data.Time
-import Data.Maybe (fromJust)
 -- #TODO find a way to make the error handling cleaner
 
 -- #TODO improve clarity, this returns a single list of tuples containing two courses and a list of the TimeBlock overlaps of those two courses
@@ -65,6 +64,7 @@ classOverlap block1 block2 minRest =
 
 -- #TODO allow for exams on the same day but different hours
 examOverlap :: TimeBlock -> TimeBlock -> Integer -> Bool
-examOverlap block1 block2 dayRest =
-  abs (diffDays (fromJust $ day block1) (fromJust $ day block2)) < dayRest
+examOverlap block1 block2 dayRest = case (day block1, day block2) of
+  (Just d1, Just d2) -> abs (diffDays d1 d2) < dayRest
+  _ -> False
 

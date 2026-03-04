@@ -5,21 +5,22 @@ import Logic.Overlap
 import Data.Time
 import Data.List
 
--- #TODO check for multiple possible results
+-- #TODO doing this with fold' can be a lot quicker
 -- #TODO dont be so strict, if the conditions dont return any then loosen them a bit
-bestSchedule :: Schedule -> Args -> Maybe Schedule
-bestSchedule set args
-  | list == [] = Nothing
-  | otherwise = Just $ head $ sortBy downtimeSort list
+bestSchedule :: Schedule -> Args -> [Schedule]
+bestSchedule [] _ = []
+bestSchedule set args = [maximumBy downtimeOrdering $ generateAllCombinations set args]
   where
-    list = generateAllCombinations set args
     -- Add more conditions as needed
-    downtimeSort :: Schedule -> Schedule -> Ordering
-    downtimeSort s1 s2
+    downtimeOrdering :: Schedule -> Schedule -> Ordering
+    downtimeOrdering s1 s2
       | computePriority s1 < computePriority s2 = GT
       | computePriority s1 > computePriority s2 = LT
-      | weekDowntimePerClass s1 <= weekDowntimePerClass s2 = GT
-      | otherwise = LT
+      | weekDowntimePerClass s1 < weekDowntimePerClass s2 = LT
+      | weekDowntimePerClass s1 > weekDowntimePerClass s2 = GT
+      | length s1 < length s2 = GT --This one is not permanent
+      | length s1 > length s2 = LT
+      | otherwise = EQ
 
 generateAllCombinations :: Schedule -> Args -> [Schedule]
 generateAllCombinations list args =
@@ -34,12 +35,10 @@ computePriority :: Schedule -> Integer
 computePriority schedule = sum [priority course | course<-schedule ]
 
 -- Doesnt apply for exams
--- #TODO find better name
 computeAttendance :: Schedule -> Integer
 computeAttendance schedule =
   toInteger $ length [course | course<-schedule, skip_class course == False ]
 
--- Does Monday..Sunday do the intended behaviour?
 weekDowntimePerClass :: Schedule -> Maybe Double
 weekDowntimePerClass [] = Nothing
 weekDowntimePerClass list =

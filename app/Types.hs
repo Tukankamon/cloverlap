@@ -42,6 +42,11 @@ getDaysFromCourse course =
   where
     blocks = [ time1 course, time2 course ] ++ maybeToList (time3 course)
 
+getCoursesFromDay :: DayOfWeek -> Schedule -> [Course]
+getCoursesFromDay _day list =
+  [course | course<-list, any (==Just _day) (map weekday (getBlockFromCourse course))]
+  
+
 getDaySchedule :: DayOfWeek -> Schedule -> [TimeBlock]
 getDaySchedule _day list =
   sort $ [block | course<-list,
@@ -55,6 +60,7 @@ isExam (TimeBlock _weekday _day _ _)
   | otherwise = Nothing
 
 data Args = Args {
+  input :: String,
   verbose :: Bool,
   classRest :: Integer,
   examRest :: Integer,

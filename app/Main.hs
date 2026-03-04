@@ -9,7 +9,14 @@ import Types
 
 flags :: Parser Args
 flags = Args
-  <$> switch
+  <$> strOption
+    ( long "input"
+    <> short 'i'
+    <> help "File name (not path) of the csv file to parse)"
+    <> showDefault
+    <> value "private.csv"
+    <> metavar "FILENAME" )
+  <*> switch
     ( long "verbose"
     <> short 'v'
     <> help "Whether to enable verbose mode when printing out data" )
@@ -21,7 +28,7 @@ flags = Args
     <> metavar "INTEGER" )
   <*> option auto
     ( long "exam-rest"
-    <> help "How much time in days minimum in between exams"
+    <> help "How much time in days minimum in between exams. A value of 0 means allowing exams on the same day"
     <> showDefault
     <> value 1
     <> metavar "INTEGER" )
@@ -37,7 +44,7 @@ flags = Args
     <> short 'm'
     <> help "Absolute minimum amount of classes to attend"
     <> showDefault
-    <> value 6
+    <> value 5
     <> metavar "INTEGER" )
   <*> option auto
     ( long "semester"
@@ -56,7 +63,7 @@ opts = info (flags <**> helper)
 main :: IO ()
 main = do
   args <- execParser opts
-  result <- getCoursesVector "private.csv"
+  result <- getCoursesVector (input args)
   case result of
     Left err -> putStrLn err
     Right v -> do
@@ -64,5 +71,6 @@ main = do
       --printOverlapInList (V.toList v) defaultRest
       putStrLn $ showSchedule (V.toList v) args
       case best_schedule of
-        Just s -> putStrLn $ showWeekSchedule s
-        Nothing -> putStrLn "Could not show the week schedule"
+        [] -> putStrLn "Could not show the week schedule"
+        -- #TODO print all not just head
+        list -> putStrLn $ showWeekSchedule (head list) args
