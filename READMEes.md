@@ -1,14 +1,18 @@
-[README en 🇪🇸](./READMEes.md)
+[README in 🇬🇧](./README.md)
 ---
 
-This program takes a list of possible classes you might want to sign up for next semester in the format show in the [example csv file](example.csv). It then calculates the most optimal schedule for you depending on how much rest you want between classes and exams, how many classes total you want to take and sorts by how much downtime between classes each schedule has. This results in a schedule that doesnt have classes or final exams that overlap and makes the best of your time so you dont have to spend 4 hours at university killing time because you live far away
+[!IMPORTANT]
+Este readme no es el principal y seguramente esté desactualizado, para la versión más actual posible ver [el readme en inglés](./README.md)
 
-# CSV syntax
-As shown in the example.csv. Dates are set either with a weekday or with a day/month, both followed by the start and end times
+Este programa toma una lista detallada de posibles clases de universidad en el formato especificado en el [csv de ejemplo](./example.csv). Calcula el horario más óptimo de clases dependiendo de: el descanso mínimo tanto entre exámenes como en clases, cuantas clases (máximo y mínimo) te quieres apuntar y optimiza para devolver las clases con menos "tiempo muerto" entre cada una de ellas. El resultado final es un horario con clases y exámenes que no se pisan unos con otros y aprovecha tu tiempo al máximo para que no te tires 4 horas esperando en la universidad matando el tiempo por que vives lo suficientemente lejos que no te da tiempo a ir y volver
 
-Empty dates for exams or classes are not parsed (only implemented for time3 and exam3 for now)
+# Syntaxis para el CSV
+Seguir las cabeceras que se muestran en el ejemplo. Las fechas de clases son del formato: "diaDeSemana horaInicio horaFin" y las de exámenes: "fechaExacta horaInicio horaFin"
 
-# Usage
+Los horarios vacíos no se tienen en cuenta (sólo implementado por ahora para time3 y exam3)
+
+# Uso
+Esto sólo está en inglés por ahora lamentablemente
 ```IO
 Usage: cloverlap [-i|--input FILENAME] [-v|--verbose] [--class-rest INTEGER] 
                  [--exam-rest INTEGER] [-M|--max-classes INTEGER] 
@@ -37,11 +41,11 @@ Available options:
 ```
 
 # Nix (flakes)
-The program is availabe to run with nix. To do this run:
+El programa se puede ejecutar mediante Nix:
 ```nix
 nix run github:Tukankamon/cloverlap
 ```
-To add it to your system configuration add the flake in the repo to your own flake.nix
+Para descargártelo permanentemente añádelo a las entradas de tu flake
 
 # Cloverlap?
-Comes from class + overlap, can sometimes be shortened to clover
+Viene de class + overlap en inglés. A veces se reduce sólo a clover (trébol)
