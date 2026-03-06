@@ -14,7 +14,7 @@ flags = Args
     <> short 'i'
     <> help "File name (not path) of the csv file to parse)"
     <> showDefault
-    <> value "private.csv"
+    <> value "example.csv"
     <> metavar "FILENAME" )
   <*> switch
     ( long "verbose"
@@ -25,27 +25,27 @@ flags = Args
     <> help "How much time in minutes minimum in between classes"
     <> showDefault
     <> value 10
-    <> metavar "INTEGER" )
+    <> metavar "INT" )
   <*> option auto
     ( long "exam-rest"
     <> help "How much time in days minimum in between exams. A value of 0 means allowing exams on the same day"
     <> showDefault
     <> value 1
-    <> metavar "INTEGER" )
+    <> metavar "INT" )
   <*> option auto
     ( long "max-classes"
     <> short 'M'
     <> help "Maximum classes to sign up for, this includes those that wont be attended to but will self study to go to the exam"
     <> showDefault
     <> value 8
-    <> metavar "INTEGER" )
+    <> metavar "INT" )
   <*> option auto
     ( long "min-classes"
     <> short 'm'
     <> help "Absolute minimum amount of classes to attend"
     <> showDefault
     <> value 5
-    <> metavar "INTEGER" )
+    <> metavar "INT" )
   <*> option auto
     ( long "semester"
     <> short 's'
@@ -62,7 +62,7 @@ opts :: ParserInfo Args
 opts = info (flags <**> helper)
   ( fullDesc
   <> progDesc "Compute the most optimal class schedule from a list of courses"
-  <> header "I dont know what to put here" )
+  <> header "University course picker / optimizer" )
 
 looser :: Args -> Maybe Args
 looser (Args _ _ _ _ _ _ _ False) = Nothing
