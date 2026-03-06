@@ -2,7 +2,7 @@ module Print
   (showSchedule,
   showAllCourses,
   showOverlapInList,
-  showWeekSchedule)
+  showWeekSchedules)
 where
 
 import Types
@@ -97,4 +97,11 @@ showDaySchedule _day list args
 showWeekSchedule :: Schedule -> Args -> String
 showWeekSchedule schedule args =
   unwords [ showDaySchedule _day schedule args | _day<-[Monday ..Sunday] ]
+
+-- Can this be done without a counter?
+showWeekSchedules :: [Schedule] -> Integer -> Args -> String
+showWeekSchedules [] _ _ = ""
+showWeekSchedules (first:rest) counter args =
+  "--- Schedule option " ++ show counter ++ " ---\n" ++ showWeekSchedule first args
+  ++ showWeekSchedules rest (counter+1) args
 

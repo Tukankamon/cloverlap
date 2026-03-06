@@ -17,12 +17,10 @@ bestSchedule set args = case generateAllCombinations set args of
     -- #TODO make it so it is not so ordered in importance by priority, downtime, length rather take all of them into account at once
     downtimeOrdering :: Schedule -> Schedule -> Ordering
     downtimeOrdering s1 s2
-      | computePriority s1 < computePriority s2 = GT
-      | computePriority s1 > computePriority s2 = LT
+      | computePriority s1 < computePriority s2 = LT
+      | computePriority s1 > computePriority s2 = GT
       | weekDowntimePerClass s1 < weekDowntimePerClass s2 = LT
       | weekDowntimePerClass s1 > weekDowntimePerClass s2 = GT
-      | length s1 < length s2 = GT --This one is not permanent
-      | length s1 > length s2 = LT
       | otherwise = EQ
 
 generateAllCombinations :: Schedule -> Args -> [Schedule]

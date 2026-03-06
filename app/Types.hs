@@ -66,5 +66,6 @@ data Args = Args {
   examRest :: Integer,
   maxClasses :: Integer,
   minClasses :: Integer,
-  trimester :: Int -- so as not to overlap with semester
+  trimester :: Int, -- so as not to overlap with semester
+  loosen :: Bool
 } deriving (Show)

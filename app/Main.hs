@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Parser (getCoursesVector)
-import Print (showSchedule, showWeekSchedule, showOverlapInList)
+import Print (showSchedule, showWeekSchedules, showOverlapInList)
 import qualified Data.Vector as V
 import Options.Applicative
 import Logic.Optimize (bestSchedule)
@@ -52,6 +52,10 @@ flags = Args
     <> help "Semester to analyze (1 or 2)"
     <> value 1
     <> metavar "INT" )
+  <*> switch
+    ( long "loosen"
+    <> short 'l'
+    <> help "If the program fails with the given restrictions, it will lower them until it finds a match")
 
 -- #TODO improve function name
 opts :: ParserInfo Args
@@ -61,9 +65,10 @@ opts = info (flags <**> helper)
   <> header "I dont know what to put here" )
 
 looser :: Args -> Maybe Args
-looser (Args f v cRest eRest max min s)
+looser (Args _ _ _ _ _ _ _ False) = Nothing
+looser (Args f v cRest eRest max min s True)
   | cRest == 0 && eRest == 0 = Nothing
-  | otherwise = Just $ Args f v newCRest newERest newMax newMin s
+  | otherwise = Just $ Args f v newCRest newERest newMax newMin s True
   where
   newCRest = cRest `div` 2
   newERest = eRest `div` 2
@@ -73,16 +78,23 @@ looser (Args f v cRest eRest max min s)
 -- #TODO better function name
 mainIsh :: Schedule -> Args -> IO()
 mainIsh list args = do
-  putStrLn $ showSchedule list args
   let best_schedule = bestSchedule list args
   case best_schedule of
-    [] -> do
-      putStrLn $ "Could not show the week schedule, trying with looser args"
+    [] ->
+      if loosen args == False then do
+        putStrLn "Can't find schedule for given input"
+      else
       case looser args of
-        Nothing -> putStrLn "Args can't be any looser"
-        Just a -> mainIsh list a
-    -- #TODO print all not just head
-    s -> putStrLn $ showWeekSchedule (head s) args
+          Nothing -> putStrLn "Args can't be any looser"
+          Just a -> do
+            putStrLn $ "Could not show the week schedule, trying with looser args"
+            mainIsh list a
+    s -> do
+      putStrLn $ showSchedule list args
+      putStrLn ""
+      putStrLn $ showWeekSchedules s 1 args
+      -- idk how to not have the else
+      if verbose args then putStrLn $ show $ args else putStr ""
 
 main :: IO ()
 main = do
