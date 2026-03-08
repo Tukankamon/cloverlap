@@ -1,7 +1,7 @@
-module Logic.Optimize (bestSchedule) where
+module Optimize (bestSchedule) where
 
 import Types
-import Logic.Overlap
+import Overlap
 import Data.Time
 import Data.List
 

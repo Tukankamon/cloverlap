@@ -1,4 +1,4 @@
-module Logic.Overlap (overlapInList) where
+module Overlap (overlapInList) where
 
 import Types
 import Data.Time

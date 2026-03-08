@@ -14,7 +14,6 @@
           fish # Better than bash (default shell)
           cabal-install
           haskell-language-server
-          #hpkgs.HUnit # Unit tests
         ];
         shellHook = ''
           fish

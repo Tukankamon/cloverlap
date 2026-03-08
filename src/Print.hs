@@ -6,8 +6,8 @@ module Print
 where
 
 import Types
-import Logic.Overlap (overlapInList)
-import Logic.Optimize (bestSchedule)
+import Overlap (overlapInList)
+import Optimize (bestSchedule)
 import Data.Time
 import Data.Maybe (fromJust)
 

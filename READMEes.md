@@ -1,8 +1,9 @@
 [README in 🇬🇧](./README.md)
+
 ---
 
 [!IMPORTANT]
-Este readme no es el principal y seguramente esté desactualizado, para la versión más actual posible ver [el readme en inglés](./README.md)
+> Este readme no es el principal y seguramente esté desactualizado, para la versión más actual posible ver [el readme en inglés](./README.md)
 
 Este programa toma una lista detallada de posibles clases de universidad en el formato especificado en el [csv de ejemplo](./example.csv). Calcula el horario más óptimo de clases dependiendo de: el descanso mínimo tanto entre exámenes como en clases, cuantas clases (máximo y mínimo) te quieres apuntar y optimiza para devolver las clases con menos "tiempo muerto" entre cada una de ellas. El resultado final es un horario con clases y exámenes que no se pisan unos con otros y aprovecha tu tiempo al máximo para que no te tires 4 horas esperando en la universidad matando el tiempo por que vives lo suficientemente lejos que no te da tiempo a ir y volver
 

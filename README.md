@@ -1,4 +1,5 @@
 [README en 🇪🇸](./READMEes.md)
+
 ---
 
 This program takes a list of possible classes you might want to sign up for next semester in the format show in the [example csv file](example.csv). It then calculates the most optimal schedule for you depending on how much rest you want between classes and exams, how many classes total you want to take and sorts by how much downtime between classes each schedule has. This results in a schedule that doesnt have classes or final exams that overlap and makes the best of your time so you dont have to spend 4 hours at university killing time because you live far away
