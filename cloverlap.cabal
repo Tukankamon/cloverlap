@@ -16,7 +16,7 @@ common warnings
 library
   exposed-modules: Types, Parser, Print, Optimize, Overlap
   hs-source-dirs: src
-  build-depends:    base ^>=4.20.2.0,
+  build-depends:    base,
     cassava,
     bytestring,
     vector,
@@ -28,13 +28,13 @@ executable cloverlap
     import:           warnings
     main-is:          Main.hs
     other-modules:
-    build-depends:    base ^>=4.20.2.0, cloverlap, vector, optparse-applicative
+    build-depends:    base, cloverlap, vector, optparse-applicative
     hs-source-dirs:   app
     default-language: Haskell2010
 
 executable cloverlap-gui
     import:           warnings
     main-is:          GuiMain.hs
-    build-depends:    base ^>=4.20.2.0, cloverlap
+    build-depends:    base, cloverlap, tinyfiledialogs, text, vector
     hs-source-dirs:   app
     default-language: Haskell2010
