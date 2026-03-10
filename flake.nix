@@ -14,6 +14,7 @@
           fish # Better than bash (default shell)
           cabal-install
           haskell-language-server
+          hpkgs.tinyfiledialogs
         ];
         shellHook = ''
           fish
