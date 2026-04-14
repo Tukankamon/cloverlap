@@ -1,44 +1,144 @@
 module Main exposing (..)
-
--- Press buttons to increment and decrement a counter.
---
--- Read how it works:
---   https://guide.elm-lang.org/architecture/buttons.html
---
+-- Image upload with a drag and drop zone.
+-- Dependencies:
+--   elm install elm/file
+--   elm install elm/json
 
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
+import File exposing (File)
+import File.Select as Select
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Json.Decode as D
+import File
+import Task
+import Http
 
--- MAIN
+stringListDecoder : D.Decoder (List String)
+stringListDecoder = D.list D.string
+
 main =
-  Browser.sandbox { init = init, update = update, view = view }
+  Browser.element
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
 
--- MODEL
-type alias Model = Int
+type alias Model =
+  { hover : Bool
+  , files : List File
+  , result : Maybe (List String) -- Result back from backend
+  }
 
-init : Model
-init = 0
+init : () -> (Model, Cmd Msg)
+init _ =
+  (Model False [] Nothing, Cmd.none)
 
--- UPDATE
 type Msg
-  = Increment
-  | Decrement
+  = Pick
+  | DragEnter
+  | DragLeave
+  | GotFiles File (List File)
+  | FileRead String -- Load file to memory
+  | ServerResponded (Result Http.Error (List String))
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Increment ->
-      model + 1
+    Pick ->
+      ( model
+      , Select.files ["text/csv"] GotFiles
+      )
 
-    Decrement ->
-      model - 1
+    DragEnter ->
+      ( { model | hover = True }
+      , Cmd.none
+      )
 
--- VIEW
-view : Model -> Html Msg
-view model =
-  div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (String.fromInt model) ]
-    , button [ onClick Increment ] [ text "+" ]
+    DragLeave ->
+      ( { model | hover = False }
+      , Cmd.none
+      )
+
+    GotFiles file files ->
+      ( { model
+            | files = file :: files
+            , hover = False
+        }
+      , Task.perform FileRead (File.toString file)
+      )
+    FileRead contents ->
+      ( model
+      , Http.post
+          { url = "http://localhost:8080/api/optimize"
+          , body = Http.stringBody "text/csv" contents
+          , expect = Http.expectJson ServerResponded stringListDecoder
+          }
+      )
+    ServerResponded (Ok response) ->
+      ( { model | result = Just response }, Cmd.none )
+
+    ServerResponded (Err _) ->
+      ( { model | result = Just ["Error talking to server"] }, Cmd.none )
+
+
+-- Has to be here bc of the browser import
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
+
+uploadDiv : Model -> Html Msg
+uploadDiv model =
+  div
+    [ style "border" (if model.hover then "6px dashed purple" else "6px dashed #ccc")
+    , style "border-radius" "20px"
+    , style "width" "280px"
+    , style "height" "100px"
+    , style "margin" "100px auto"
+    , style "padding" "20px"
+    , style "display" "flex"
+    , style "flex-direction" "column"
+    , style "justify-content" "center"
+    , style "align-items" "center"
+    , hijackOn "dragenter" (D.succeed DragEnter)
+    , hijackOn "dragover" (D.succeed DragEnter)
+    , hijackOn "dragleave" (D.succeed DragLeave)
+    , hijackOn "drop" dropDecoder
     ]
+    [ button [ onClick Pick ] [ text "Upload CSV file" ]
+    --, span [ style "color" "#ccc" ] [ text (Debug.toString model) ]
+    ]
+
+view : Model -> Html Msg
+view model = div
+  [ style "display" "flex"
+  , style "flex-direction" "column"
+  --, style "justify-content" "center"
+  , style "align-items" "center"
+  , style "min-height" "100vh"
+  ]
+  [
+    h1 [] [text "Cloverlap"],
+    uploadDiv model,
+    h2 [] [
+      text (String.join ", " (Maybe.withDefault [] model.result))
+    ]
+  ]
+
+
+dropDecoder : D.Decoder Msg
+dropDecoder =
+  D.at ["dataTransfer","files"] (D.oneOrMore GotFiles File.decoder)
+
+
+-- Stops default browser behaviour of opening the file
+hijackOn : String -> D.Decoder msg -> Attribute msg
+hijackOn event decoder =
+  preventDefaultOn event (D.map hijack decoder)
+
+
+hijack : msg -> (msg, Bool)
+hijack msg =
+  (msg, True)

@@ -24,7 +24,8 @@
 					elm-review
         ]);
         shellHook = ''
-          fish
+					fish
+					set SHELL $(which fish)
         '';
       };
 
