@@ -1,4 +1,6 @@
 dist-newstyle
+*.o
+*.hi
 *.js
 frontend/elm-stuff
 frontend/static

@@ -55,13 +55,10 @@ weekDowntimePerClass list =
 computeDowntime :: DayOfWeek -> Schedule -> Integer
 computeDowntime _day list = case getDaySchedule _day list of
  [] -> 0
- _schedule ->
-  let
-   _first = head _schedule
-   _last = last _schedule
-   in
-   diffTimeToPicoseconds $
-    diffTimeOfDay (endTime _last) (startTime _first) - blockListLength _schedule
+ (x:xs) -> diffTimeToPicoseconds $ diffTimeOfDay (endTime _last) (startTime _first) - (blockListLength $ x : xs)
+   where 
+   _first = x
+   _last = last $ x : xs
 
 blockListLength :: [TimeBlock] -> DiffTime
 blockListLength [] = 0

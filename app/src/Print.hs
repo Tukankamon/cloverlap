@@ -6,7 +6,7 @@ module Print (
 )
 where
 
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, listToMaybe)
 import Data.Time
 import Optimize (bestSchedule)
 import Overlap (overlapInList)
@@ -93,22 +93,22 @@ showTimeBlockContr (firstPair : list) =
 showSchedule :: Schedule -> Args -> String
 showSchedule set args =
  let errString = "Could not find an optimal schedule with the input conditions\n"
-  in case (bestSchedule set args, (verbose args)) of
+ in case (bestSchedule set args, (verbose args)) of
       ([], False) -> errString
       -- "The best" in terms of downtime not overlapping #TODO
       ([], True) ->
        errString
         ++ "This is the best that can be found:\n"
         ++ showOverlapInList set args
-      (list, _) ->
-       (showAllCourses s (verbose args))
-        ++ "It has "
-        ++ show (length s)
-        ++ " total classes with "
-        ++ show (length (filter (not . skip_class) s))
-        ++ " to be attended\n"
-       where
-       s = head list -- #TODO print all not just head
+      (list, _) -> case listToMaybe list of
+       Just s ->
+          (showAllCourses s (verbose args))
+          ++ "It has "
+          ++ show (length s)
+          ++ " total classes with "
+          ++ show (length (filter (not . skip_class) s))
+          ++ " to be attended\n"
+       _ -> "Error, tried to access first element of empty list"
 
 showDaySchedule :: DayOfWeek -> Schedule -> Args -> String
 showDaySchedule _day list args

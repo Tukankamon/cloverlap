@@ -29,7 +29,7 @@ executable cli
  import:           warnings
  main-is:          Main.hs
  other-modules:
- build-depends:    base, cloverlap, vector, optparse-applicative, aeson
+ build-depends:    base, cloverlap, vector, optparse-applicative
  hs-source-dirs:   app
  default-language: Haskell2010
 

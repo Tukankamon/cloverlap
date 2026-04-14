@@ -4,7 +4,7 @@ import qualified Data.Vector as V
 import Optimize (bestSchedule)
 import Options.Applicative
 import Parser (getCoursesVector)
-import Print (showOverlapInList, showSchedule, showWeekSchedules)
+import Print (showSchedule, showWeekSchedules)
 import Types
 
 flags :: Parser Args

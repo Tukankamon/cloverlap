@@ -28,19 +28,20 @@ main =
 
 type alias Model =
   { hover : Bool
-  , files : List File
+  , file : Maybe File
   , result : Maybe (List String) -- Result back from backend
   }
 
 init : () -> (Model, Cmd Msg)
-init _ =
-  (Model False [] Nothing, Cmd.none)
+init _ = (Model False Nothing Nothing, Cmd.none)
 
 type Msg
   = Pick
   | DragEnter
   | DragLeave
-  | GotFiles File (List File)
+  | GotFile File (List File)
+  | Clear
+  | TrySend
   | FileRead String -- Load file to memory
   | ServerResponded (Result Http.Error (List String))
 
@@ -49,7 +50,7 @@ update msg model =
   case msg of
     Pick ->
       ( model
-      , Select.files ["text/csv"] GotFiles
+      , Select.files ["text/csv"] GotFile
       )
 
     DragEnter ->
@@ -62,13 +63,23 @@ update msg model =
       , Cmd.none
       )
 
-    GotFiles file files ->
-      ( { model
-            | files = file :: files
-            , hover = False
-        }
-      , Task.perform FileRead (File.toString file)
+    GotFile file _ ->
+      ( { model | file = Just file, hover = False }
+      --, Task.perform FileRead (File.toString file)
+      , Cmd.none
       )
+
+    Clear ->
+      ( { model | file = Nothing, result = Nothing }
+      , Cmd.none
+      )
+
+    TrySend -> case model.file of
+      Nothing ->
+        ( { model | result = Just ["No csv to send! Click 'upload CSV file'"] }, Cmd.none )
+      Just file ->
+        ( model, Task.perform FileRead (File.toString file))
+
     FileRead contents ->
       ( model
       , Http.post
@@ -86,30 +97,63 @@ update msg model =
 
 -- Has to be here bc of the browser import
 subscriptions : Model -> Sub Msg
-subscriptions model =
-  Sub.none
+subscriptions model = Sub.none
 
+-- #TODO have this preview the csv once it is uploaded
 uploadDiv : Model -> Html Msg
-uploadDiv model =
-  div
-    [ style "border" (if model.hover then "6px dashed purple" else "6px dashed #ccc")
-    , style "border-radius" "20px"
-    , style "width" "280px"
-    , style "height" "100px"
-    , style "margin" "100px auto"
-    , style "padding" "20px"
-    , style "display" "flex"
-    , style "flex-direction" "column"
-    , style "justify-content" "center"
-    , style "align-items" "center"
-    , hijackOn "dragenter" (D.succeed DragEnter)
-    , hijackOn "dragover" (D.succeed DragEnter)
-    , hijackOn "dragleave" (D.succeed DragLeave)
-    , hijackOn "drop" dropDecoder
+uploadDiv model = div
+  [ style "border" (if model.hover then "6px dashed purple" else "6px dashed #ccc")
+  , style "border-radius" "20px"
+  , style "width" "280px"
+  , style "height" "100px"
+  , style "margin" "80px auto"
+  , style "padding" "20px"
+  , style "display" "flex"
+  , style "flex-direction" "column"
+  , style "justify-content" "center"
+  , style "align-items" "center"
+  , hijackOn "dragenter" (D.succeed DragEnter)
+  , hijackOn "dragover" (D.succeed DragEnter)
+  , hijackOn "dragleave" (D.succeed DragLeave)
+  , hijackOn "drop" dropDecoder
+  ]
+  [ button [ onClick Pick ] [ text "Upload CSV file" ]
+  --, span [ style "color" "#ccc" ] [ text (Debug.toString model) ]
+  ]
+
+rowButton : msg -> List (Attribute msg)
+rowButton msg =
+  [ style "width" "80px"
+  , style "height" "40px"
+  , style "align-self" "center"
+  ] ++ [ onClick msg ]
+
+interactive : Model -> Html Msg
+interactive model = div
+  [ style "justify-content" "center"
+  , style "display" "flex"
+  , style "flex-direction" "row"
+  , style "gap" "20px"
+  ]
+  [ button (rowButton Clear) [text "clear"]
+  , uploadDiv model
+  , button (rowButton TrySend) [text "GO!"]
+  ]
+
+-- #TODO make result prettier
+showResult : Model -> Html Msg
+showResult model = case model.result of
+  Just [x] -> h2 [] [ text x ] -- Errors are shown like this
+  Just items -> div []
+    [ h2 [] [ text "The following classes are the most optimial for your requirements" ]
+    , ul
+      [ style "display" "flex"
+      , style "flex-direction" "column"
+      , style "align-items" "center"
+      ]
+      (List.map (\elem -> li [] [ text elem ]) items)
     ]
-    [ button [ onClick Pick ] [ text "Upload CSV file" ]
-    --, span [ style "color" "#ccc" ] [ text (Debug.toString model) ]
-    ]
+  _ -> div [] []
 
 view : Model -> Html Msg
 view model = div
@@ -119,26 +163,19 @@ view model = div
   , style "align-items" "center"
   , style "min-height" "100vh"
   ]
-  [
-    h1 [] [text "Cloverlap"],
-    uploadDiv model,
-    h2 [] [
-      text (String.join ", " (Maybe.withDefault [] model.result))
-    ]
+  [ h1 [] [text "Cloverlap"]
+  , interactive model
+  , showResult model
   ]
-
 
 dropDecoder : D.Decoder Msg
 dropDecoder =
-  D.at ["dataTransfer","files"] (D.oneOrMore GotFiles File.decoder)
-
+  D.at ["dataTransfer","files"] (D.oneOrMore GotFile File.decoder)
 
 -- Stops default browser behaviour of opening the file
 hijackOn : String -> D.Decoder msg -> Attribute msg
 hijackOn event decoder =
   preventDefaultOn event (D.map hijack decoder)
 
-
 hijack : msg -> (msg, Bool)
-hijack msg =
-  (msg, True)
+hijack msg = (msg, True)

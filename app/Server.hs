@@ -44,8 +44,7 @@ main = scotty 8080 $ do
       }
 
   case getCoursesFromBytes csvData of
-   Left err ->
-    do
+   Left err -> do
      status status400
      text (pack err)
    Right courses -> do
