@@ -1,2 +1,5 @@
 dist-newstyle
+*.js
+frontend/elm-stuff
+frontend/static
 private.csv

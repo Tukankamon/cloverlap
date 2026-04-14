@@ -66,14 +66,14 @@ opts = info (flags <**> helper)
 
 looser :: Args -> Maybe Args
 looser (Args _ _ _ _ _ _ _ False) = Nothing
-looser (Args f v cRest eRest max min s True)
+looser (Args f v cRest eRest mx mn s True)
   | cRest == 0 && eRest == 0 = Nothing
   | otherwise = Just $ Args f v newCRest newERest newMax newMin s True
   where
   newCRest = cRest `div` 2
   newERest = eRest `div` 2
-  newMin = min -1
-  newMax = max +1
+  newMin = mn - 1
+  newMax = mx + 1
 
 -- #TODO better function name
 mainIsh :: Schedule -> Args -> IO()

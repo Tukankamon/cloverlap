@@ -11,30 +11,32 @@ build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 
 common warnings
-    ghc-options: -Wall
+ ghc-options: -Wall
 
 library
-  exposed-modules: Types, Parser, Print, Optimize, Overlap
-  hs-source-dirs: src
-  build-depends:    base,
-    cassava,
-    bytestring,
-    vector,
-    time,
-    sort
-  default-language: Haskell2010
+ exposed-modules: Types, Parser, Print, Optimize, Overlap
+ hs-source-dirs: app/src
+ build-depends:    base,
+  cassava,
+  bytestring,
+  vector,
+  time,
+  sort
+ default-language: Haskell2010
 
 executable cloverlap
-    import:           warnings
-    main-is:          Main.hs
-    other-modules:
-    build-depends:    base, cloverlap, vector, optparse-applicative
-    hs-source-dirs:   app
-    default-language: Haskell2010
+ import:           warnings
+ main-is:          Main.hs
+ other-modules:
+ build-depends:    base, cloverlap, vector, optparse-applicative
+ hs-source-dirs:   app
+ default-language: Haskell2010
 
-executable cloverlap-gui
-    import:           warnings
-    main-is:          GuiMain.hs
-    build-depends:    base, cloverlap, tinyfiledialogs, text, vector
-    hs-source-dirs:   app
-    default-language: Haskell2010
+executable server
+ import:           warnings
+ main-is:          Server.hs
+ other-modules:
+ build-depends:    base, cloverlap, scotty, wai-extra, wai-middleware-static
+ hs-source-dirs:   app
+ default-language: Haskell2010
+ ghc-options: -threaded -rtsopts -with-rtsopts=-N

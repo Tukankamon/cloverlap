@@ -6,23 +6,32 @@
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
       hpkgs = pkgs.haskellPackages;
+			cabal-pkg = hpkgs.callCabal2nix "" ./. {};
     in
     {
       devShells.x86_64-linux.default = pkgs.mkShell {
-        packages = with pkgs; [
+        packages = (with pkgs; [
+					zlib # cabal complained without this
           ghc # Compiler
           fish # Better than bash (default shell)
           cabal-install
           haskell-language-server
-          hpkgs.tinyfiledialogs
-        ];
+				]) ++
+				(with pkgs.elmPackages; [
+					elm
+					elm-format
+					elm-language-server
+					elm-review
+        ]);
         shellHook = ''
           fish
         '';
       };
 
-      # Proof.hs
-      packages."x86_64-linux".default =
-        hpkgs.callCabal2nix "" ./. {};
-    };
+		packages.x86_64-linux = {
+			cli = cabal-pkg;
+				#server = cabal-pkg.components.exes.cloverlap-server;
+			default = cabal-pkg;
+		};
+	};
 }
