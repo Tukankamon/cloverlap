@@ -9,6 +9,8 @@ As shown in the example.csv. Dates are set either with a weekday or with a day/m
 
 Empty dates for exams or classes are not parsed (only implemented for time3 and exam3 for now)
 
+Dates for exam can be added via the {date} <startTime> <endTime> format. The starting and end times are optional and will both default to midday (12pm). Both options are shown in the example
+
 Lines prepended with '#' will count as comments and will not affect the final result
 
 # Usage

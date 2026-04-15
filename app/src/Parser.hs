@@ -3,7 +3,7 @@
 -- If not would have to move a lot over to Types
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Parser (getCoursesVector, getCoursesFromBytes) where
+module Parser (getCoursesVector, getCoursesBytes) where
 
 import qualified Data.ByteString.Char8 as BS -- IDK why I need this
 import qualified Data.ByteString.Lazy as BL
@@ -62,8 +62,8 @@ getCoursesVector file = do
   Right (_, v) -> return $ Right v
 
 -- To read files sent through HTTP
-getCoursesFromBytes :: BL.ByteString -> Either String (V.Vector Course)
-getCoursesFromBytes csvData = case decodeByName csvData of
+getCoursesBytes :: BL.ByteString -> Either String (V.Vector Course)
+getCoursesBytes csvData = case decodeByName (removeComments csvData) of
  Left err -> Left err
  Right (_, v) -> Right v
 
@@ -83,6 +83,8 @@ parseClass _ = Nothing
 
 -- #TODO join this and the above into one
 parseExam :: [String] -> Maybe TimeBlock
+-- This allows exams to be declared just with the date, no start and end times
+parseExam [_day] = Just $ TimeBlock Nothing (parseDay _day) midday midday
 parseExam (_day : start : end : _) = do
  d <- parseDay _day
  st <- parseTimeOfDay start

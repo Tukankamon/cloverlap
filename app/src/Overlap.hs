@@ -72,9 +72,9 @@ classOverlap block1 block2 minRest =
 
 -- #TODO allow for exams on the same day but different hours
 examOverlap :: TimeBlock -> TimeBlock -> Integer -> Bool
-examOverlap _ _ 0 = False
+examOverlap _ _ 0 = False -- Allows for exams on the same day without checking the hour
 examOverlap block1 block2 dayRest = case (day block1, day block2) of
- (Just d1, Just d2) -> abs (diffDays d1 d2) < dayRest
+ (Just d1, Just d2) -> abs (diffDays d1 d2) <= dayRest
  _ -> False
 {- Don't want this behaviour right now, could add it back later
 examOverlap block1 block2 0 = timeOfDayToTime firstFinish - timeOfDayToTime lastStart < 0

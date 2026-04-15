@@ -9,7 +9,7 @@ import qualified Data.Vector as V
 import Network.HTTP.Types.Status (status400)
 import Network.Wai.Middleware.Static
 import Optimize (bestSchedule)
-import Parser (getCoursesFromBytes)
+import Parser (getCoursesBytes)
 import Types
 
 import GHC.Generics (Generic)
@@ -42,7 +42,7 @@ main = scotty 8080 $ do
       liftIO $ putStrLn "Parsed JSON successfully"
 
       -- #TODO create a getCoursesFromX so you don't need this long conversion
-      case getCoursesFromBytes (BL8.pack csvData) of
+      case getCoursesBytes (BL8.pack csvData) of
        Left err -> do
          status status400
          text (pack err)
