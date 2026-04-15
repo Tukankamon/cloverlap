@@ -250,7 +250,6 @@ inputBox title v toMsg = div
     []
   ]
 
--- Grid to select args on the request
 argsGrid : Model -> Html Msg
 argsGrid model = div
   [ style "display" "grid"
@@ -282,7 +281,7 @@ interactive model = div
   ]
   [ button (rowButton Clear) [text "clear"]
   , uploadDiv model
-  , button (rowButton TrySend) [text "GO!"]
+  , button (rowButton TrySend) [text "GO!"] --#TODO add button to send next-best schedule
   ]
 
 -- Just for the function below

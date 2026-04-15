@@ -11,7 +11,7 @@ bestSchedule :: Schedule -> Args -> [Schedule]
 bestSchedule [] _ = []
 bestSchedule set args = case generateAllCombinations set args of
  [] -> []
- list -> [maximumBy downtimeOrdering list]
+ list -> sortBy downtimeOrdering (nub list) -- #TODO nub is n^2, avoid it
  where
  -- Add more conditions as needed
  -- #TODO make it so it is not so ordered in importance by priority, downtime, length rather take all of them into account at once
