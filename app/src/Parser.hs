@@ -7,6 +7,7 @@ module Parser (getCoursesVector, getCoursesFromBytes) where
 
 import qualified Data.ByteString.Char8 as BS -- IDK why I need this
 import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString.Lazy.Char8 as BL8
 import Data.Csv
 import Data.Maybe (isJust)
 import Data.Time
@@ -28,6 +29,17 @@ instance FromNamedRecord Course where
    <*> r .: "skip_class"
    <*> r .: "priority"
 
+isComment :: BL8.ByteString -> Bool
+isComment line = case BL8.uncons line of
+  Just ('#', _) -> True
+  _             -> False
+
+removeComments :: BL.ByteString -> BL.ByteString
+removeComments =
+  BL8.unlines
+  . filter (not . isComment)
+  . BL8.lines
+
 instance FromField TimeBlock where
  parseField bs =
   let ws = words $ BS.unpack bs
@@ -44,7 +56,8 @@ instance FromField Bool where
 getCoursesVector :: FilePath -> IO (Either String (V.Vector Course))
 getCoursesVector file = do
  csvData <- BL.readFile file
- case decodeByName csvData of
+ let cleaned = removeComments csvData
+ case decodeByName cleaned of
   Left err -> return $ Left err
   Right (_, v) -> return $ Right v
 

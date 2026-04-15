@@ -51,8 +51,8 @@ main = scotty 8080 $ do
     let result = bestSchedule (V.toList courses) args
     case result of
      [] -> do
-			json ("No elements match criteria" :: String)
-			liftIO $ putStrLn "Sent back with no results matching criteria"
+      json ("No elements match criteria" :: String)
+      liftIO $ putStrLn "Sent back with no results matching criteria"
      (x : _) -> do
-			json $ getNamesFromSchedule x
-			liftIO $ putStrLn "Correctly sent back response"
+      json $ getNamesFromSchedule x
+      liftIO $ putStrLn "Correctly sent back response"
