@@ -1,11 +1,19 @@
-.PHONY: all build-backend build-frontend dev clean
+.PHONY: all server cli clean
+
+STATIC_DIR := frontend/static
+APP_JS := $(STATIC_DIR)/app.js
 
 all: server
 
-site: $(STATIC_DIR)
+$(APP_JS): frontend/src/Main.elm
 	cd frontend && elm make src/Main.elm --output=static/app.js
 
-server: site
+$(STATIC_DIR):
+	mkdir -p $(STATIC_DIR)
+
+site: $(APP_JS)
+
+server: $(APP_JS)
 	cabal run server
 
 cli:
@@ -13,4 +21,4 @@ cli:
 
 clean:
 	cabal clean
-	rm -rf frontend/static
+	rm -rf $(STATIC_DIR)

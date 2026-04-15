@@ -15,6 +15,7 @@
           ghc # Compiler
           fish # Better than bash (default shell)
           cabal-install
+					hlint
           haskell-language-server
 				]) ++
 				(with pkgs.elmPackages; [
