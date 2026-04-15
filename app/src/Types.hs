@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Types where
 
@@ -6,6 +7,7 @@ import Data.Aeson
 import Data.Maybe
 import Data.Sort
 import Data.Time
+import GHC.Generics (Generic)
 
 -- Consider adding Maybes to the other timeblocks aswell
 data Course = Course
@@ -109,3 +111,36 @@ data Args = Args
  , loosen :: Bool
  }
  deriving (Show)
+
+customOptions :: Options
+customOptions = defaultOptions
+  { fieldLabelModifier = drop 1 }
+
+-- Some params dont make sense over http so they are removed
+data ArgsInput = ArgsInput
+ { _classRest :: Integer
+ , _examRest :: Integer
+ , _maxClasses :: Integer
+ , _minClasses :: Integer
+ , _trimester :: Int
+ , _loosen :: Bool
+ } deriving (Show, Generic)
+
+instance FromJSON ArgsInput where
+  parseJSON = genericParseJSON customOptions
+
+instance ToJSON ArgsInput where
+  toJSON = genericToJSON customOptions
+  toEncoding = genericToEncoding customOptions
+
+inputToArgs :: ArgsInput -> Args
+inputToArgs a = Args
+  { input = ""
+  , verbose = False
+  , classRest = _classRest a
+  , examRest = _examRest a
+  , minClasses = _minClasses a
+  , maxClasses = _maxClasses a
+  , trimester = _trimester a
+  , loosen = _loosen a
+  }
