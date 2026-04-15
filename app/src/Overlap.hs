@@ -62,22 +62,22 @@ timeBlockOverlap block1 block2 args =
 
 classOverlap :: TimeBlock -> TimeBlock -> Integer -> Bool
 classOverlap block1 block2 minRest =
- timeDiff > restSeconds && (weekday block1) == (weekday block2)
+ timeDiff > restSeconds && weekday block1 == weekday block2
  where
  firstFinish, lastStart :: TimeOfDay
- firstFinish = minimum [endTime block1, endTime block2]
- lastStart = maximum [startTime block1, startTime block2]
- restSeconds = fromIntegral (minRest * 60)
- timeDiff = (timeOfDayToTime firstFinish) - (timeOfDayToTime lastStart)
+ firstFinish = min (endTime block1) (endTime block2)
+ lastStart = max (startTime block1) (startTime block2)
+ restSeconds = fromIntegral $ minRest * 60
+ timeDiff = timeOfDayToTime firstFinish - timeOfDayToTime lastStart
 
 -- #TODO allow for exams on the same day but different hours
 examOverlap :: TimeBlock -> TimeBlock -> Integer -> Bool
-examOverlap block1 block2 0 = (timeOfDayToTime firstFinish) - (timeOfDayToTime lastStart) < 0
+examOverlap block1 block2 0 = timeOfDayToTime firstFinish - timeOfDayToTime lastStart < 0
  where
  firstFinish, lastStart :: TimeOfDay
- firstFinish = minimum [endTime block1, endTime block2]
- lastStart = maximum [startTime block1, startTime block2]
- timeDiff = (timeOfDayToTime firstFinish) - (timeOfDayToTime lastStart)
+ firstFinish = min (endTime block1) (endTime block2)
+ lastStart = max (startTime block1) (startTime block2)
+ timeDiff = timeOfDayToTime firstFinish - timeOfDayToTime lastStart
 examOverlap block1 block2 dayRest = case (day block1, day block2) of
  (Just d1, Just d2) -> abs (diffDays d1 d2) < dayRest
  _ -> False

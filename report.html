@@ -161,30 +161,15 @@ document.body.className = "script";
 
 <p><a class="all" href="javascript:show('')">All hints</a></p>
 <ul>
-<li><a id="hint0" href="javascript:show('hint0')">Warning: Eta reduce (3)</a></li>
-<li><a id="hint1" href="javascript:show('hint1')">Warning: Redundant map (1)</a></li>
-<li><a id="hint2" href="javascript:show('hint2')">Warning: Use elem (1)</a></li>
-<li><a id="hint3" href="javascript:show('hint3')">Warning: Use map (1)</a></li>
-<li><a id="hint4" href="javascript:show('hint4')">Warning: Use max (2)</a></li>
-<li><a id="hint5" href="javascript:show('hint5')">Warning: Use min (2)</a></li>
-<li><a id="hint6" href="javascript:show('hint6')">Warning: Use print (1)</a></li>
-<li><a id="hint7" href="javascript:show('hint7')">Suggestion: Move brackets to avoid $ (1)</a></li>
-<li><a id="hint8" href="javascript:show('hint8')">Suggestion: Redundant $ (2)</a></li>
-<li><a id="hint9" href="javascript:show('hint9')">Suggestion: Redundant == (2)</a></li>
-<li><a id="hint10" href="javascript:show('hint10')">Suggestion: Redundant bracket (14)</a></li>
-<li><a id="hint11" href="javascript:show('hint11')">Suggestion: Use foldr (1)</a></li>
-<li><a id="hint12" href="javascript:show('hint12')">Suggestion: Use head (1)</a></li>
-<li><a id="hint13" href="javascript:show('hint13')">Suggestion: Use null (4)</a></li>
+<li><a id="hint0" href="javascript:show('hint0')">Warning: Eta reduce (5)</a></li>
 </ul>
 
 <p><a class="all" href="javascript:show('')">All files</a></p>
 <ul>
-<li><a id="file0" href="javascript:show('file0')">./app/Main.hs (4)</a></li>
-<li><a id="file1" href="javascript:show('file1')">./app/src/Optimize.hs (5)</a></li>
-<li><a id="file2" href="javascript:show('file2')">./app/src/Overlap.hs (13)</a></li>
-<li><a id="file3" href="javascript:show('file3')">./app/src/Parser.hs (3)</a></li>
-<li><a id="file4" href="javascript:show('file4')">./app/src/Print.hs (7)</a></li>
-<li><a id="file5" href="javascript:show('file5')">./app/src/Types.hs (4)</a></li>
+<li><a id="file0" href="javascript:show('file0')">./app/src/Optimize.hs (1)</a></li>
+<li><a id="file1" href="javascript:show('file1')">./app/src/Overlap.hs (1)</a></li>
+<li><a id="file2" href="javascript:show('file2')">./app/src/Parser.hs (2)</a></li>
+<li><a id="file3" href="javascript:show('file3')">./app/src/Types.hs (1)</a></li>
 </ul>
 
 </div>
@@ -195,100 +180,22 @@ v3.10
     - a tool to suggest improvements to your Haskell code.
 </p>
 
-<div class="hint9 file0">
-app/Main.hs:101:7-26: Suggestion: Redundant ==<br/>
+<div class="hint0 file0">
+app/src/Optimize.hs:64:1-97: Warning: Eta reduce<br/>
 Found<br/>
-<pre><span class='hs-definition'>loosen</span> <span class='hs-varid'>args</span> <span class='hs-varop'>==</span> <span class='hs-conid'>False</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>not</span> <span class='hs-layout'>(</span><span class='hs-varid'>loosen</span> <span class='hs-varid'>args</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint8 file0">
-app/Main.hs:107:16: Suggestion: Redundant $<br/>
-Found<br/>
-<pre><span class='hs-definition'>putStrLn</span>
-  <span class='hs-varop'>$</span> <span class='hs-str'>"Could not show the week schedule, trying with looser args"</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>putStrLn</span>
-  <span class='hs-str'>"Could not show the week schedule, trying with looser args"</span></pre>
-
-</div>
-
-<div class="hint6 file0">
-app/Main.hs:114:25-46: Warning: Use print<br/>
-Found<br/>
-<pre><span class='hs-definition'>putStrLn</span> <span class='hs-varop'>$</span> <span class='hs-varid'>show</span> <span class='hs-varop'>$</span> <span class='hs-varid'>args</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>print</span> <span class='hs-varid'>args</span></pre>
-
-</div>
-
-<div class="hint8 file0">
-app/Main.hs:114:41: Suggestion: Redundant $<br/>
-Found<br/>
-<pre><span class='hs-definition'>show</span> <span class='hs-varop'>$</span> <span class='hs-varid'>args</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>show</span> <span class='hs-varid'>args</span></pre>
-
-</div>
-
-<div class="hint13 file1">
-app/src/Optimize.hs:34:4-32: Suggestion: Use null<br/>
-Found<br/>
-<pre><span class='hs-definition'>overlapInList</span> <span class='hs-varid'>pick</span> <span class='hs-varid'>args</span> <span class='hs-varop'>==</span> <span class='hs-conid'>[]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>null</span> <span class='hs-layout'>(</span><span class='hs-varid'>overlapInList</span> <span class='hs-varid'>pick</span> <span class='hs-varid'>args</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint9 file1">
-app/src/Optimize.hs:43:51-76: Suggestion: Redundant ==<br/>
-Found<br/>
-<pre><span class='hs-definition'>skip_class</span> <span class='hs-varid'>course</span> <span class='hs-varop'>==</span> <span class='hs-conid'>False</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>not</span> <span class='hs-layout'>(</span><span class='hs-varid'>skip_class</span> <span class='hs-varid'>course</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint7 file1">
-app/src/Optimize.hs:58:36-112: Suggestion: Move brackets to avoid $<br/>
-Found<br/>
-<pre><span class='hs-definition'>diffTimeOfDay</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-sel'>_last</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-sel'>_first</span><span class='hs-layout'>)</span>
-  <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>blockListLength</span> <span class='hs-varop'>$</span> <span class='hs-varid'>x</span> <span class='hs-conop'>:</span> <span class='hs-varid'>xs</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>diffTimeOfDay</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-sel'>_last</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-sel'>_first</span><span class='hs-layout'>)</span>
-  <span class='hs-comment'>-</span> <span class='hs-varid'>blockListLength</span> <span class='hs-layout'>(</span><span class='hs-varid'>x</span> <span class='hs-conop'>:</span> <span class='hs-varid'>xs</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint11 file1">
-app/src/Optimize.hs:(64,1)-(66,73): Suggestion: Use foldr<br/>
-Found<br/>
-<pre><span class='hs-definition'>blockListLength</span> <span class='hs-conid'>[]</span> <span class='hs-keyglyph'>=</span> <span class='hs-num'>0</span>
-<span class='hs-definition'>blockListLength</span> <span class='hs-layout'>(</span><span class='hs-varid'>first</span> <span class='hs-conop'>:</span> <span class='hs-varid'>rest</span><span class='hs-layout'>)</span>
-  <span class='hs-keyglyph'>=</span> <span class='hs-layout'>(</span><span class='hs-varid'>diffTimeOfDay</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
-      <span class='hs-varop'>+</span> <span class='hs-varid'>blockListLength</span> <span class='hs-varid'>rest</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>blockListLength</span> <span class='hs-varid'>rest</span>
+<pre><span class='hs-definition'>blockListLength</span> <span class='hs-varid'>xs</span>
   <span class='hs-keyglyph'>=</span> <span class='hs-varid'>foldr</span>
       <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>first</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-layout'>(</span><span class='hs-varop'>+</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>diffTimeOfDay</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
-      <span class='hs-num'>0</span> <span class='hs-varid'>rest</span></pre>
-
-</div>
-
-<div class="hint10 file1">
-app/src/Optimize.hs:66:2-50: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>diffTimeOfDay</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
-  <span class='hs-varop'>+</span> <span class='hs-varid'>blockListLength</span> <span class='hs-varid'>rest</span></pre>
+      <span class='hs-num'>0</span> <span class='hs-varid'>xs</span></pre>
 Perhaps<br/>
-<pre><span class='hs-definition'>diffTimeOfDay</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span>
-  <span class='hs-varop'>+</span> <span class='hs-varid'>blockListLength</span> <span class='hs-varid'>rest</span></pre>
+<pre><span class='hs-definition'>blockListLength</span>
+  <span class='hs-keyglyph'>=</span> <span class='hs-varid'>foldr</span>
+      <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>first</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-layout'>(</span><span class='hs-varop'>+</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>diffTimeOfDay</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>first</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
+      <span class='hs-num'>0</span></pre>
 
 </div>
 
-<div class="hint0 file2">
+<div class="hint0 file1">
 app/src/Overlap.hs:21:1-42: Warning: Eta reduce<br/>
 Found<br/>
 <pre><span class='hs-definition'>removeMirroredPair</span> <span class='hs-varid'>triples</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>go</span> <span class='hs-conid'>[]</span> <span class='hs-varid'>triples</span></pre>
@@ -297,124 +204,7 @@ Perhaps<br/>
 
 </div>
 
-<div class="hint10 file2">
-app/src/Overlap.hs:65:28-43: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>weekday</span> <span class='hs-varid'>block1</span><span class='hs-layout'>)</span> <span class='hs-varop'>==</span> <span class='hs-layout'>(</span><span class='hs-varid'>weekday</span> <span class='hs-varid'>block2</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>weekday</span> <span class='hs-varid'>block1</span> <span class='hs-varop'>==</span> <span class='hs-layout'>(</span><span class='hs-varid'>weekday</span> <span class='hs-varid'>block2</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file2">
-app/src/Overlap.hs:65:48-63: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>weekday</span> <span class='hs-varid'>block1</span><span class='hs-layout'>)</span> <span class='hs-varop'>==</span> <span class='hs-layout'>(</span><span class='hs-varid'>weekday</span> <span class='hs-varid'>block2</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>weekday</span> <span class='hs-varid'>block1</span><span class='hs-layout'>)</span> <span class='hs-varop'>==</span> <span class='hs-varid'>weekday</span> <span class='hs-varid'>block2</span></pre>
-
-</div>
-
-<div class="hint5 file2">
-app/src/Overlap.hs:68:16-55: Warning: Use min<br/>
-Found<br/>
-<pre><span class='hs-definition'>minimum</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>,</span> <span class='hs-varid'>endTime</span> <span class='hs-varid'>block2</span><span class='hs-keyglyph'>]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>min</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>block2</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint4 file2">
-app/src/Overlap.hs:69:14-57: Warning: Use max<br/>
-Found<br/>
-<pre><span class='hs-definition'>maximum</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>,</span> <span class='hs-varid'>startTime</span> <span class='hs-varid'>block2</span><span class='hs-keyglyph'>]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>max</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>block2</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file2">
-app/src/Overlap.hs:71:13-41: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file2">
-app/src/Overlap.hs:71:45-71: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span></pre>
-
-</div>
-
-<div class="hint10 file2">
-app/src/Overlap.hs:75:31-59: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file2">
-app/src/Overlap.hs:75:63-89: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span></pre>
-
-</div>
-
-<div class="hint5 file2">
-app/src/Overlap.hs:78:16-55: Warning: Use min<br/>
-Found<br/>
-<pre><span class='hs-definition'>minimum</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>,</span> <span class='hs-varid'>endTime</span> <span class='hs-varid'>block2</span><span class='hs-keyglyph'>]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>min</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>endTime</span> <span class='hs-varid'>block2</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint4 file2">
-app/src/Overlap.hs:79:14-57: Warning: Use max<br/>
-Found<br/>
-<pre><span class='hs-definition'>maximum</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>,</span> <span class='hs-varid'>startTime</span> <span class='hs-varid'>block2</span><span class='hs-keyglyph'>]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>max</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>block1</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>startTime</span> <span class='hs-varid'>block2</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file2">
-app/src/Overlap.hs:80:13-41: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file2">
-app/src/Overlap.hs:80:45-71: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>firstFinish</span><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <span class='hs-varid'>timeOfDayToTime</span> <span class='hs-varid'>lastStart</span></pre>
-
-</div>
-
-<div class="hint12 file3">
-app/src/Parser.hs:60:23-29: Suggestion: Use head<br/>
-Found<br/>
-<pre><span class='hs-definition'>xs</span> <span class='hs-varop'>!!</span> <span class='hs-num'>0</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>head</span> <span class='hs-varid'>xs</span></pre>
-
-</div>
-
-<div class="hint0 file3">
+<div class="hint0 file2">
 app/src/Parser.hs:81:1-56: Warning: Eta reduce<br/>
 Found<br/>
 <pre><span class='hs-definition'>parseDay</span> <span class='hs-varid'>s</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>parseTimeM</span> <span class='hs-conid'>True</span> <span class='hs-varid'>defaultTimeLocale</span> <span class='hs-str'>"%d/%m"</span> <span class='hs-varid'>s</span></pre>
@@ -423,7 +213,7 @@ Perhaps<br/>
 
 </div>
 
-<div class="hint0 file3">
+<div class="hint0 file2">
 app/src/Parser.hs:84:1-62: Warning: Eta reduce<br/>
 Found<br/>
 <pre><span class='hs-definition'>parseTimeOfDay</span> <span class='hs-varid'>s</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>parseTimeM</span> <span class='hs-conid'>True</span> <span class='hs-varid'>defaultTimeLocale</span> <span class='hs-str'>"%H:%M"</span> <span class='hs-varid'>s</span></pre>
@@ -432,120 +222,12 @@ Perhaps<br/>
 
 </div>
 
-<div class="hint10 file4">
-app/src/Print.hs:54:6-29: Suggestion: Redundant bracket<br/>
+<div class="hint0 file3">
+app/src/Types.hs:79:1-37: Warning: Eta reduce<br/>
 Found<br/>
-<pre><span class='hs-str'>". Priority: "</span> <span class='hs-varop'>++</span> <span class='hs-layout'>(</span><span class='hs-varid'>show</span> <span class='hs-layout'>(</span><span class='hs-varid'>priority</span> <span class='hs-varid'>course</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-str'>". Priority: "</span> <span class='hs-varop'>++</span> <span class='hs-varid'>show</span> <span class='hs-layout'>(</span><span class='hs-varid'>priority</span> <span class='hs-varid'>course</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file4">
-app/src/Print.hs:64:2-29: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>showCourse</span> <span class='hs-varid'>first</span> <span class='hs-varid'>verbosity</span><span class='hs-layout'>)</span>
-  <span class='hs-varop'>++</span> <span class='hs-str'>"\n"</span> <span class='hs-varop'>++</span> <span class='hs-varid'>showAllCourses</span> <span class='hs-varid'>rest</span> <span class='hs-varid'>verbosity</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>showCourse</span> <span class='hs-varid'>first</span> <span class='hs-varid'>verbosity</span> <span class='hs-varop'>++</span> <span class='hs-str'>"\n"</span> <span class='hs-varop'>++</span> <span class='hs-varid'>showAllCourses</span> <span class='hs-varid'>rest</span> <span class='hs-varid'>verbosity</span></pre>
-
-</div>
-
-<div class="hint13 file4">
-app/src/Print.hs:68:4-20: Suggestion: Use null<br/>
-Found<br/>
-<pre><span class='hs-definition'>overlapList</span> <span class='hs-varop'>==</span> <span class='hs-conid'>[]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>null</span> <span class='hs-varid'>overlapList</span></pre>
-
-</div>
-
-<div class="hint10 file4">
-app/src/Print.hs:96:34-47: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>bestSchedule</span> <span class='hs-varid'>set</span> <span class='hs-varid'>args</span><span class='hs-layout'>,</span> <span class='hs-layout'>(</span><span class='hs-varid'>verbose</span> <span class='hs-varid'>args</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>bestSchedule</span> <span class='hs-varid'>set</span> <span class='hs-varid'>args</span><span class='hs-layout'>,</span> <span class='hs-varid'>verbose</span> <span class='hs-varid'>args</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint10 file4">
-app/src/Print.hs:105:11-43: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>showAllCourses</span> <span class='hs-varid'>s</span> <span class='hs-layout'>(</span><span class='hs-varid'>verbose</span> <span class='hs-varid'>args</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
-  <span class='hs-varop'>++</span>
-    <span class='hs-str'>"It has "</span>
-      <span class='hs-varop'>++</span>
-        <span class='hs-varid'>show</span> <span class='hs-layout'>(</span><span class='hs-varid'>length</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span>
-          <span class='hs-varop'>++</span>
-            <span class='hs-str'>" total classes with "</span>
-              <span class='hs-varop'>++</span>
-                <span class='hs-varid'>show</span> <span class='hs-layout'>(</span><span class='hs-varid'>length</span> <span class='hs-layout'>(</span><span class='hs-varid'>filter</span> <span class='hs-layout'>(</span><span class='hs-varid'>not</span> <span class='hs-varop'>.</span> <span class='hs-varid'>skip_class</span><span class='hs-layout'>)</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varop'>++</span> <span class='hs-str'>" to be attended\n"</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>showAllCourses</span> <span class='hs-varid'>s</span> <span class='hs-layout'>(</span><span class='hs-varid'>verbose</span> <span class='hs-varid'>args</span><span class='hs-layout'>)</span>
-  <span class='hs-varop'>++</span>
-    <span class='hs-str'>"It has "</span>
-      <span class='hs-varop'>++</span>
-        <span class='hs-varid'>show</span> <span class='hs-layout'>(</span><span class='hs-varid'>length</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span>
-          <span class='hs-varop'>++</span>
-            <span class='hs-str'>" total classes with "</span>
-              <span class='hs-varop'>++</span>
-                <span class='hs-varid'>show</span> <span class='hs-layout'>(</span><span class='hs-varid'>length</span> <span class='hs-layout'>(</span><span class='hs-varid'>filter</span> <span class='hs-layout'>(</span><span class='hs-varid'>not</span> <span class='hs-varop'>.</span> <span class='hs-varid'>skip_class</span><span class='hs-layout'>)</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varop'>++</span> <span class='hs-str'>" to be attended\n"</span></pre>
-
-</div>
-
-<div class="hint13 file4">
-app/src/Print.hs:115:4-13: Suggestion: Use null<br/>
-Found<br/>
-<pre><span class='hs-definition'>list</span> <span class='hs-varop'>==</span> <span class='hs-conid'>[]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>null</span> <span class='hs-varid'>list</span></pre>
-
-</div>
-
-<div class="hint13 file4">
-app/src/Print.hs:115:18-36: Suggestion: Use null<br/>
-Found<br/>
-<pre><span class='hs-definition'>daily_courses</span> <span class='hs-varop'>==</span> <span class='hs-conid'>[]</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>null</span> <span class='hs-varid'>daily_courses</span></pre>
-
-</div>
-
-<div class="hint3 file5">
-app/src/Types.hs:(79,1)-(80,64): Warning: Use map<br/>
-Found<br/>
-<pre><span class='hs-definition'>getNamesFromSchedule</span> <span class='hs-conid'>[]</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>[]</span>
-<span class='hs-definition'>getNamesFromSchedule</span> <span class='hs-layout'>(</span><span class='hs-varid'>x</span> <span class='hs-conop'>:</span> <span class='hs-varid'>xs</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-layout'>(</span><span class='hs-varid'>name</span> <span class='hs-varid'>x</span><span class='hs-layout'>)</span> <span class='hs-conop'>:</span> <span class='hs-varid'>getNamesFromSchedule</span> <span class='hs-varid'>xs</span></pre>
-Perhaps<br/>
 <pre><span class='hs-definition'>getNamesFromSchedule</span> <span class='hs-varid'>xs</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>map</span> <span class='hs-varid'>name</span> <span class='hs-varid'>xs</span></pre>
-
-</div>
-
-<div class="hint10 file5">
-app/src/Types.hs:80:31-38: Suggestion: Redundant bracket<br/>
-Found<br/>
-<pre><span class='hs-layout'>(</span><span class='hs-varid'>name</span> <span class='hs-varid'>x</span><span class='hs-layout'>)</span> <span class='hs-conop'>:</span> <span class='hs-varid'>getNamesFromSchedule</span> <span class='hs-varid'>xs</span></pre>
 Perhaps<br/>
-<pre><span class='hs-definition'>name</span> <span class='hs-varid'>x</span> <span class='hs-conop'>:</span> <span class='hs-varid'>getNamesFromSchedule</span> <span class='hs-varid'>xs</span></pre>
-
-</div>
-
-<div class="hint2 file5">
-app/src/Types.hs:84:28-45: Warning: Use elem<br/>
-Found<br/>
-<pre><span class='hs-definition'>any</span> <span class='hs-layout'>(</span><span class='hs-varop'>==</span> <span class='hs-conid'>Just</span> <span class='hs-sel'>_day</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>elem</span> <span class='hs-layout'>(</span><span class='hs-conid'>Just</span> <span class='hs-sel'>_day</span><span class='hs-layout'>)</span></pre>
-
-</div>
-
-<div class="hint1 file5">
-app/src/Types.hs:84:28-87: Warning: Redundant map<br/>
-Found<br/>
-<pre><span class='hs-definition'>any</span> <span class='hs-layout'>(</span><span class='hs-varop'>==</span> <span class='hs-conid'>Just</span> <span class='hs-sel'>_day</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>map</span> <span class='hs-varid'>weekday</span> <span class='hs-layout'>(</span><span class='hs-varid'>getBlockFromCourse</span> <span class='hs-varid'>course</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span></pre>
-Perhaps<br/>
-<pre><span class='hs-definition'>any</span> <span class='hs-layout'>(</span><span class='hs-layout'>(</span><span class='hs-varop'>==</span> <span class='hs-conid'>Just</span> <span class='hs-sel'>_day</span><span class='hs-layout'>)</span> <span class='hs-varop'>.</span> <span class='hs-varid'>weekday</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>getBlockFromCourse</span> <span class='hs-varid'>course</span><span class='hs-layout'>)</span></pre>
+<pre><span class='hs-definition'>getNamesFromSchedule</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>map</span> <span class='hs-varid'>name</span></pre>
 
 </div>
 

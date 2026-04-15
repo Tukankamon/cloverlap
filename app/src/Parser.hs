@@ -56,9 +56,9 @@ getCoursesFromBytes csvData = case decodeByName csvData of
 
 parseTimeBlock :: [String] -> Maybe TimeBlock
 parseTimeBlock [] = Nothing
-parseTimeBlock xs
- | startsWithWeekDay (xs !! 0) = parseClass xs
- | otherwise = parseExam xs
+parseTimeBlock (x:xs)
+ | startsWithWeekDay x = parseClass (x:xs)
+ | otherwise = parseExam (x:xs)
 
 parseClass :: [String] -> Maybe TimeBlock
 parseClass (_weekday : start : end : _) = do

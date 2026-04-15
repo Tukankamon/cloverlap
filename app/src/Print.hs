@@ -51,7 +51,7 @@ showCourse course True =
   ++ ". Will class be attended?: "
   ++ show (skip_class course)
   ++ ". Priority: "
-  ++ (show (priority course))
+  ++ show (priority course)
  where
  maybeTimeBlock :: Maybe TimeBlock -> String
  maybeTimeBlock _timeBlock = case _timeBlock of
@@ -61,12 +61,11 @@ showCourse course True =
 showAllCourses :: Schedule -> Bool -> String
 showAllCourses [] _ = ""
 showAllCourses (first : rest) verbosity =
- (showCourse first verbosity) ++ "\n" ++ showAllCourses rest verbosity
+ showCourse first verbosity ++ "\n" ++ showAllCourses rest verbosity
 
 showOverlapInList :: Schedule -> Args -> String
 showOverlapInList list args
- | overlapList == [] =
-   "No courses overlap in either classes or exams"
+ | null overlapList = "No courses overlap in either classes or exams"
  | otherwise =
    "These following courses overlap in the given input:\n"
     ++ concatMap formatOverlap overlapList
@@ -93,7 +92,7 @@ showTimeBlockContr (firstPair : list) =
 showSchedule :: Schedule -> Args -> String
 showSchedule set args =
  let errString = "Could not find an optimal schedule with the input conditions\n"
- in case (bestSchedule set args, (verbose args)) of
+ in case (bestSchedule set args, verbose args) of
       ([], False) -> errString
       -- "The best" in terms of downtime not overlapping #TODO
       ([], True) ->
@@ -102,7 +101,7 @@ showSchedule set args =
         ++ showOverlapInList set args
       (list, _) -> case listToMaybe list of
        Just s ->
-          (showAllCourses s (verbose args))
+          showAllCourses s (verbose args)
           ++ "It has "
           ++ show (length s)
           ++ " total classes with "
@@ -112,7 +111,7 @@ showSchedule set args =
 
 showDaySchedule :: DayOfWeek -> Schedule -> Args -> String
 showDaySchedule _day list args
- | list == [] || daily_courses == [] = "No classes on " ++ show _day ++ "\n"
+ | null list || null daily_courses = "No classes on " ++ show _day ++ "\n"
  | otherwise =
    "The schedule for "
     ++ show _day

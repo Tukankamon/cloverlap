@@ -98,20 +98,20 @@ mainIsh list args = do
  let best_schedule = bestSchedule list args
  case best_schedule of
   [] ->
-   if loosen args == False
+   if not (loosen args)
     then do
      putStrLn "Can't find schedule for given input"
     else case looser args of
      Nothing -> putStrLn "Args can't be any looser"
      Just a -> do
-      putStrLn $ "Could not show the week schedule, trying with looser args"
+      putStrLn "Could not show the week schedule, trying with looser args"
       mainIsh list a
   s -> do
    putStrLn $ showSchedule list args
    putStrLn ""
    putStrLn $ showWeekSchedules s 1 args
    -- idk how to not have the else
-   if verbose args then putStrLn $ show $ args else putStr ""
+   if verbose args then print args else putStr ""
 
 main :: IO ()
 main = do

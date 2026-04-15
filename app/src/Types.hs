@@ -76,12 +76,11 @@ getDaysFromCourse course =
  blocks = [time1 course, time2 course] ++ maybeToList (time3 course)
 
 getNamesFromSchedule :: Schedule -> [String]
-getNamesFromSchedule [] = []
-getNamesFromSchedule (x:xs) = (name x) : getNamesFromSchedule xs
+getNamesFromSchedule xs = map name xs
 
 getCoursesFromDay :: DayOfWeek -> Schedule -> [Course]
 getCoursesFromDay _day list =
- [course | course <- list, any (== Just _day) (map weekday (getBlockFromCourse course))]
+ [course | course <- list, Just _day `elem` map weekday (getBlockFromCourse course)]
 
 getDaySchedule :: DayOfWeek -> Schedule -> [TimeBlock]
 getDaySchedule _day list =

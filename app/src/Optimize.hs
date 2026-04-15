@@ -31,7 +31,7 @@ generateAllCombinations list args =
  , computeAttendance pick >= minClasses args
  , -- There is probably a better way to do the following
  [course | course <- pick, semester course == trimester args] == pick
- , overlapInList pick args == []
+ , null $ overlapInList pick args
  ]
 
 computePriority :: Schedule -> Integer
@@ -40,7 +40,7 @@ computePriority schedule = sum [priority course | course <- schedule]
 -- Doesnt apply for exams
 computeAttendance :: Schedule -> Integer
 computeAttendance schedule =
- toInteger $ length [course | course <- schedule, skip_class course == False]
+ toInteger $ length [course | course <- schedule, not $ skip_class course]
 
 weekDowntimePerClass :: Schedule -> Maybe Double
 weekDowntimePerClass [] = Nothing
@@ -55,15 +55,13 @@ weekDowntimePerClass list =
 computeDowntime :: DayOfWeek -> Schedule -> Integer
 computeDowntime _day list = case getDaySchedule _day list of
  [] -> 0
- (x:xs) -> diffTimeToPicoseconds $ diffTimeOfDay (endTime _last) (startTime _first) - (blockListLength $ x : xs)
+ (x:xs) -> diffTimeToPicoseconds $ diffTimeOfDay (endTime _last) (startTime _first) - blockListLength (x : xs)
    where 
    _first = x
    _last = last $ x : xs
 
 blockListLength :: [TimeBlock] -> DiffTime
-blockListLength [] = 0
-blockListLength (first : rest) =
- (diffTimeOfDay (endTime first) (startTime first)) + blockListLength rest
+blockListLength xs = foldr (\first -> (+) (diffTimeOfDay (endTime first) (startTime first))) 0 xs
 
 -- Library doesnt already have one
 diffTimeOfDay :: TimeOfDay -> TimeOfDay -> DiffTime
