@@ -2,6 +2,7 @@ dist-newstyle/*
 *.o
 *.hi
 *.js
+report.html
 frontend/elm-stuff
 frontend/static
 private.csv

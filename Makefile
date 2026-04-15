@@ -14,10 +14,15 @@ $(STATIC_DIR):
 site: $(APP_JS)
 
 server: $(APP_JS)
-	cabal run server
+	cabal run server -O0 -j
 
 cli:
-	cabal run cli
+	cabal run cli -O0 -j
+
+prod:
+	cd frontend && elm make src/Main.elm --output=static/app.js --optimize
+	cabal run server -j -O2
+	
 
 clean:
 	cabal clean
