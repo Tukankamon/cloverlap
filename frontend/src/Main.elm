@@ -65,15 +65,34 @@ encodeArgs args =
         , ( "loosen", E.bool args.loosen )
         ]
 
+type alias Response =
+  { title : String
+  , classes : List String
+  --#TODO Not actually string, need to implement Day and TimeBlock types here
+  , calendar : List (List String)
+  , exams : List String
+  }
+
+emptyResponse : Response
+emptyResponse = Response "" [] [] []
+
+responseDecoder : D.Decoder Response
+responseDecoder =
+  D.map4 Response
+    (D.field "title" D.string)
+    (D.field "classes" (D.list D.string))
+    (D.field "calendar" (D.list (D.list D.string)))
+    (D.field "exams" (D.list D.string))
+
 type alias Model =
   { hover : Bool
   , file : Maybe File
-  , result : Maybe (List String) -- Result back from backend, First element is amount of results not shown
+  , response : Response
   , args : Args
   }
 
 init : () -> (Model, Cmd Msg)
-init _ = (Model False Nothing Nothing defaultArgs, Cmd.none)
+init _ = (Model False Nothing emptyResponse defaultArgs, Cmd.none)
 
 type Msg
   = Pick
@@ -83,7 +102,7 @@ type Msg
   | Clear
   | TrySend
   | FileRead String -- Load file to memory
-  | ServerResponded (Result Http.Error (List String))
+  | ServerResponded (Result Http.Error Response)
   -- Arg setting
   | SetClassRest Int
   | SetExamRest Int
@@ -117,13 +136,16 @@ update msg model =
       )
 
     Clear ->
-      ( { model | file = Nothing, result = Nothing }
+      ( { model | file = Nothing, response = emptyResponse }
       , Cmd.none
       )
 
     TrySend -> case model.file of
       Nothing ->
-        ( { model | result = Just ["No csv to send! Click 'upload CSV file'"] }, Cmd.none )
+        ( { model | response =
+          Response "No csv to send! Click 'upload CSV file'" [] [] []
+          }
+        , Cmd.none )
       Just file ->
         ( model, Task.perform FileRead (File.toString file))
 
@@ -142,9 +164,9 @@ update msg model =
           Http.expectStringResponse ServerResponded
             (\response -> case response of
               Http.GoodStatus_ _ body ->
-                case D.decodeString stringOrListDecoder body of
-                  Ok list -> Ok list
-                  Err _ -> Ok [ body ]
+                case D.decodeString responseDecoder body of
+                  Ok result -> Ok result
+                  Err err -> Err (Http.BadBody (D.errorToString err))
 
               Http.BadStatus_ _ body ->
                   Err (Http.BadBody body)
@@ -160,8 +182,8 @@ update msg model =
                     )
             }
         )
-    ServerResponded (Ok response) ->
-      ( { model | result = Just response }, Cmd.none )
+    ServerResponded (Ok r) ->
+      ( { model | response = r }, Cmd.none )
 
     ServerResponded (Err err) ->
       let
@@ -172,7 +194,10 @@ update msg model =
           Http.BadStatus code -> "Server error: " ++ String.fromInt code
           Http.BadUrl url -> "Bad URL: " ++ url
       in
-      ( { model | result = Just [ "Error talking to server " ++ message] }, Cmd.none )
+      ( { model | response =
+        Response ("Error talking to server " ++ message) [] [] []
+        }
+      , Cmd.none )
 
     SetClassRest n ->
       (updateArgs (\a -> { a | classRest = n}) model , Cmd.none)
@@ -281,29 +306,29 @@ interactive model = div
   ]
   [ button (rowButton Clear) [text "clear"]
   , uploadDiv model
-  , button (rowButton TrySend) [text "GO!"] --#TODO add button to send next-best schedule
+  , button (rowButton TrySend) [text "GO!"]
+  --#TODO add button to send next-best schedule
   ]
 
--- Just for the function below
-headerText : String -> Html Msg
-headerText n = case n of
-  "0" -> text "Only one optimal configuration of classes was found with your requirements:"
-  _ -> text ("The following classes are the most optimal for your requirements with " ++ n ++ " other configurations possible:")
+headerText : Response -> Html Msg
+headerText r = case List.length r.classes of
+  1 -> text "Only one optimal configuration of classes was found with your requirements:"
+  n -> text ("The following classes are the most optimal for your requirements with " ++ String.fromInt (n-1) ++ " other configurations possible:")
 
 -- #TODO make result prettier
 showResult : Model -> Html Msg
-showResult model = case model.result of
-  Just [x] -> h2 [] [ text x ] -- Errors are shown like this
-  Just (x::xs) -> div []
-    [ h2 [] [ headerText x ]
+showResult model = case model.response.classes of
+  [] -> h2 [] [ text model.response.title ] -- Errors are shown like this
+  list -> div []
+    [ h2 [] [ headerText model.response ]
+    --, text (Debug.toString model.response)
     , ul
       [ style "display" "flex"
       , style "flex-direction" "column"
       --, style "align-items" "center"
       ]
-      (List.map (\elem -> li [] [ text elem ]) xs)
+      (List.map (\elem -> li [] [ text elem ]) list)
     ]
-  _ -> text ""
 
 view : Model -> Html Msg
 view model = div

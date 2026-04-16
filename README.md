@@ -49,5 +49,19 @@ nix run github:Tukankamon/cloverlap#<package>
 ```<package>``` Is to choose from the cli and server versions. Defaults to cli
 To add it to your system configuration add the flake in the repo to your own flake.nix
 
+# Http
+Front end sends JSON containing the csv data and the args (called ArgsInput in the backend)
+
+Backend sends back a struct with the following fields:
+```haskell
+data Response = Response
+	{ title :: String
+	, classes :: [String]
+	, calendar :: [[TimeBlock]]
+	, exams :: [Day]
+	} deriving (Show, Generic)
+instance ToJSON Response
+```
+
 # Cloverlap?
 Comes from class + overlap, can sometimes be shortened to clover

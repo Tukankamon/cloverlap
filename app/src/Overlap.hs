@@ -28,6 +28,7 @@ removeMirroredPair triples = go [] triples
   | otherwise = (x, y, z) : go ((x, y) : seen) rest
 
 -- #TODO make this function more readable
+-- #TODO set how strict it is, allow for 1/3 exams to overlap for example
 coursesOverlap :: Course -> Course -> Args -> [(TimeBlock, TimeBlock)]
 coursesOverlap course1 course2 args = _classOverlap ++ _examOverlap
  where

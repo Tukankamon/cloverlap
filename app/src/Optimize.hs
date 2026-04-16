@@ -7,32 +7,38 @@ import Types
 
 -- #TODO doing this with fold' can be a lot quicker
 -- #TODO dont be so strict, if the conditions dont return any then loosen them a bit
-bestSchedule :: Schedule -> Args -> [Schedule]
+bestSchedule :: [Course] -> Args -> [Schedule]
 bestSchedule [] _ = []
 bestSchedule set args = case generateAllCombinations set args of
  [] -> []
- list -> sortBy downtimeOrdering (nub list) -- #TODO nub is n^2, avoid it
+ list -> sortBy downtimeOrdering list
  where
  -- Add more conditions as needed
  -- #TODO make it so it is not so ordered in importance by priority, downtime, length rather take all of them into account at once
  downtimeOrdering :: Schedule -> Schedule -> Ordering
  downtimeOrdering s1 s2
-  | computePriority s1 < computePriority s2 = LT
-  | computePriority s1 > computePriority s2 = GT
-  | weekDowntimePerClass s1 < weekDowntimePerClass s2 = LT
-  | weekDowntimePerClass s1 > weekDowntimePerClass s2 = GT
+  | computePriority s1 < computePriority s2 = GT
+  | computePriority s1 > computePriority s2 = LT
+  | weekDowntimePerClass s1 < weekDowntimePerClass s2 = GT
+  | weekDowntimePerClass s1 > weekDowntimePerClass s2 = LT
   | otherwise = EQ
+
+kSubsequence :: Int -> [a] -> [[a]]
+kSubsequence 0 _ = [[]]
+kSubsequence _ [] = [[]]
+kSubsequence k (x:xs) = kSubsequence k xs ++ map (x:) (kSubsequence (k-1) xs)
 
 generateAllCombinations :: Schedule -> Args -> [Schedule]
 generateAllCombinations list args =
  [ pick
- | pick <- subsequences list
- , length pick <= fromInteger (maxClasses args)
- , computeAttendance pick >= minClasses args
- , -- There is probably a better way to do the following
- [course | course <- pick, semester course == trimester args] == pick
+ | pick <- kSubsequence max filtered
+ , computeAttendance pick >= min
  , null $ overlapInList pick args
  ]
+	where
+	filtered = filter (\c -> semester c == trimester args) list
+	max = fromInteger (maxClasses args)
+	min = minClasses args 
 
 computePriority :: Schedule -> Integer
 computePriority schedule = sum [priority course | course <- schedule]

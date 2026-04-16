@@ -22,7 +22,7 @@ data Course = Course
  , skip_class :: !Bool
  , priority :: !Integer
  }
- deriving (Show)
+ deriving (Show, Ord)
 
 instance ToJSON Course where
  toJSON c =
@@ -51,7 +51,7 @@ data TimeBlock = TimeBlock
  , startTime :: TimeOfDay
  , endTime :: TimeOfDay
  }
- deriving (Eq, Show)
+ deriving (Eq, Show, Generic)
 
 instance Ord TimeBlock where
  (TimeBlock _ _ start1 end1) `compare` (TimeBlock _ _ start2 end2) =
@@ -85,13 +85,15 @@ getCoursesFromDay _day list =
  [course | course <- list, Just _day `elem` map weekday (getBlockFromCourse course)]
 
 getDaySchedule :: DayOfWeek -> Schedule -> [TimeBlock]
-getDaySchedule _day list =
- sort $
+getDaySchedule _day list = sort $
   [ block
   | course <- list
   , block <- getBlockFromCourse course
   , Just _day == weekday block
   ]
+
+getWeekSchedule :: Schedule -> [[TimeBlock]]
+getWeekSchedule schedule = [getDaySchedule _day schedule | _day <- [Monday .. Sunday]]
 
 -- #TODO make it so it is impossible for a timeblock to be both
 isExam :: TimeBlock -> Maybe Bool
