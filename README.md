@@ -47,6 +47,7 @@ The program is availabe to run with nix. To do this run:
 nix run github:Tukankamon/cloverlap#<package>
 ```
 ```<package>``` Is to choose from the cli and server versions. Defaults to cli
+
 To add it to your system configuration add the flake in the repo to your own flake.nix
 
 # Http

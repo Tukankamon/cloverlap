@@ -20,6 +20,7 @@ cli:
 	cabal run cli -O0 -j
 
 site-release: frontend/src/Main.elm
+	# Only a 2.5% difference in the size of app.js
 	cd frontend && elm make src/Main.elm --output=static/app.js --optimize
 
 release: site-release
