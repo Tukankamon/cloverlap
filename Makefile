@@ -19,8 +19,10 @@ server: $(APP_JS)
 cli:
 	cabal run cli -O0 -j
 
-release:
+site-release: frontend/src/Main.elm
 	cd frontend && elm make src/Main.elm --output=static/app.js --optimize
+
+release: site-release
 	cabal run server -j -O2
 	
 clean:
