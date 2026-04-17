@@ -57,3 +57,25 @@ type alias Response =
 
 emptyResponse : Response
 emptyResponse = Response "" [] [] []
+
+type Day
+  = Mon
+  | Tue
+  | Wed
+  | Thu
+  | Fri
+  | Sat
+  | Sun
+
+week : List Day
+week = [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
+
+dayToString : Day -> String
+dayToString day = case day of
+  Mon -> "Monday"
+  Tue -> "Tuesday"
+  Wed -> "Wednesday"
+  Thu -> "Thursday"
+  Fri -> "Friday"
+  Sat -> "Saturday"
+  Sun -> "Sunday"

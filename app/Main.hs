@@ -15,7 +15,7 @@ flags =
       <> short 'i'
       <> help "File name (not path) of the csv file to parse)"
       <> showDefault
-      <> value "example.csv"
+      <> value ""
       <> metavar "FILENAME"
    )
   <*> switch

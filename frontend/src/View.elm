@@ -114,6 +114,68 @@ showResult model = case model.response.classes of
       (List.map (\elem -> li [] [ text elem ]) list)
     ]
 
+type alias TimeOfDay =
+  { hour : Int
+  , minute : Int
+  }
+
+formatTime : Int -> String
+formatTime time = String.padLeft 2 '0' (String.fromInt time)
+
+formatBlock : TimeOfDay -> String
+formatBlock time = formatTime time.hour ++ ":" ++ formatTime time.minute
+
+type alias TimeBlock = 
+  { name : String
+  , day : Day
+  , startTime : TimeOfDay
+  , endTime : TimeOfDay
+  }
+
+noon : TimeOfDay
+noon = {hour = 12, minute = 0}
+
+testBlock : TimeBlock
+testBlock =
+  {name = "test", day = Mon, startTime = noon, endTime = {hour = 13, minute = 10}}
+
+viewBlock : TimeBlock -> Html Msg
+viewBlock block = div
+  [ style "background" "#e8f0fd"
+  , style "border-radius" "8px"
+  , style "padding" "8px 10px"
+  ]
+  [ div [style "font-weight" "500", style "font-size" "13px"]
+    [ text block.name ]
+  , div [style "font-weight" "11px", style "opacity" "0.8", style "margin-top" "2px"]
+    [ text (formatBlock block.startTime) ]
+  ]
+
+viewDay : Day -> Html Msg
+viewDay day = div
+  [ style "flex" "1"
+  , style "background" "var(--color-background-secondary)"
+  , style "border-radius" "12px"
+  , style "padding" "12px"
+  , style "display" "flex"
+  , style "flex-direction" "column"
+  , style "gap" "6px"
+  ]
+  [ h3 [] [ text (dayToString day) ]
+  , viewBlock testBlock
+  , viewBlock testBlock
+  ]
+
+--#TODO fix that depending on week day name length the calendar changes size
+viewWeek : Html Msg
+viewWeek = div
+  [ style "display" "flex"
+  , style "flex-direction" "row"
+  , style "gap" "32px"
+  ]
+  (List.map viewDay week)
+
+
 view : Model -> Html Msg
 view model = div
   [ style "display" "flex"
@@ -125,6 +187,7 @@ view model = div
   [ h1 [] [text "Cloverlap"]
   , interactive model
   , showResult model
+  , viewWeek
   ]
 
 dropDecoder : D.Decoder Msg

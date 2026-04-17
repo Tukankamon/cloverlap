@@ -53,6 +53,7 @@ instance FromField Bool where
   | b == "false" = pure False
   | otherwise = fail ("Cannot parse bool" ++ show b)
 
+-- #TODO return sane error if file doesnt exist, right now it crashes
 getCoursesVector :: FilePath -> IO (Either String (V.Vector Course))
 getCoursesVector file = do
  csvData <- BL.readFile file

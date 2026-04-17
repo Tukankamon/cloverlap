@@ -146,3 +146,4 @@ inputToArgs a = Args
   , trimester = _trimester a
   , loosen = _loosen a
   }
+
