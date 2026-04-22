@@ -82,11 +82,18 @@ dayDecoder =
 
 timeBlockDecoder : D.Decoder TimeBlock
 timeBlockDecoder =
-  D.map4 TimeBlock
-    (D.field "weekday" dayDecoder)
-    (D.field "day" (D.nullable D.string))
-    (D.field "startTime" timeOfDayDecoder)
-    (D.field "endTime" timeOfDayDecoder)
+  D.map4 (\wd d st et ->
+    { name = ""
+    , weekday = wd
+    , day = d
+    , startTime = st
+    , endTime = et
+    }
+  )
+  (D.field "weekday" dayDecoder)
+  (D.field "day" (D.nullable D.string))
+  (D.field "startTime" timeOfDayDecoder)
+  (D.field "endTime" timeOfDayDecoder)
 
 responseDecoder : D.Decoder Response
 responseDecoder =

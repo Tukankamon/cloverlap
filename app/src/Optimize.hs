@@ -35,10 +35,10 @@ generateAllCombinations list args =
  , computeAttendance pick >= min
  , null $ overlapInList pick args
  ]
-	where
-	filtered = filter (\c -> semester c == trimester args) list
-	max = fromInteger (maxClasses args)
-	min = minClasses args 
+  where
+  filtered = filter (\c -> semester c == trimester args) list
+  max = fromInteger (maxClasses args)
+  min = minClasses args 
 
 computePriority :: Schedule -> Integer
 computePriority schedule = sum [priority course | course <- schedule]

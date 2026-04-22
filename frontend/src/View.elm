@@ -114,30 +114,10 @@ showResult model = case model.response.classes of
       (List.map (\elem -> li [] [ text elem ]) list)
     ]
 
-type alias TimeOfDay =
-  { hour : Int
-  , minute : Int
-  }
-
-formatTime : Int -> String
-formatTime time = String.padLeft 2 '0' (String.fromInt time)
-
 formatBlock : TimeOfDay -> String
-formatBlock time = formatTime time.hour ++ ":" ++ formatTime time.minute
-
-type alias TimeBlock = 
-  { name : String
-  , day : Day
-  , startTime : TimeOfDay
-  , endTime : TimeOfDay
-  }
-
-noon : TimeOfDay
-noon = {hour = 12, minute = 0}
-
-testBlock : TimeBlock
-testBlock =
-  {name = "test", day = Mon, startTime = noon, endTime = {hour = 13, minute = 10}}
+formatBlock time =
+  let f t = String.padLeft 2 '0' (String.fromInt t) in
+  f time.hour ++ ":" ++ f time.minute
 
 viewBlock : TimeBlock -> Html Msg
 viewBlock block = div

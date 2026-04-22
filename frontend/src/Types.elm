@@ -61,11 +61,22 @@ type alias TimeOfDay =
   }
 
 type alias TimeBlock =
-  { weekday : Maybe Day
+  { name : String
+  , weekday : Maybe Day
   , day : Maybe String -- Exam date, unimplemented for now
   , startTime : TimeOfDay
   , endTime : TimeOfDay
   }
+
+oclock : Int -> TimeOfDay
+oclock time = {hour = time, minute = 0}
+
+noon : TimeOfDay
+noon = oclock 12
+
+testBlock : TimeBlock
+testBlock =
+  {name = "test", weekday = Just Mon, day = Nothing, startTime = noon, endTime = oclock 13}
 
 emptyResponse : Response
 emptyResponse = Response "" [] [] []

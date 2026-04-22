@@ -27,7 +27,7 @@ instance ToJSON Request
 data Response = Response
   { title :: String
   , classes :: [String]
-  , calendar :: [[TimeBlock]]
+  , calendar :: [[TimeBlock]] -- #TODO This is wrong, it should send courses not timeBlocks
   , exams :: [Day]
   } deriving (Show, Generic)
 instance ToJSON Response
