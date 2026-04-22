@@ -25,40 +25,40 @@ instance FromJSON Request
 instance ToJSON Request
 
 data Response = Response
-	{ title :: String
-	,	classes :: [String]
-	, calendar :: [[TimeBlock]]
-	, exams :: [Day]
-	} deriving (Show, Generic)
+  { title :: String
+  , classes :: [String]
+  , calendar :: [[TimeBlock]]
+  , exams :: [Day]
+  } deriving (Show, Generic)
 instance ToJSON Response
 
 handleResponse :: Request -> ActionM ()
 handleResponse (Request csvData arguments) = do
-	liftIO $ putStrLn "Parsed JSON successfully"
-	-- #TODO create a getCoursesFromX so you don't need this long conversion
-	case getCoursesBytes (BL8.pack csvData) of
-	 Left err -> do
-		 status status400
-		 text (pack err)
-	 Right courses -> do
-		let result = bestSchedule (V.toList courses) (inputToArgs arguments)
-		case result of
-		 [] -> do
-			json $ Response
-				{title = "No elements match criteria"
-				, classes = []
-				, calendar = []
-				, exams = []
-			}
-			liftIO $ putStrLn "Sent back with no results matching criteria"
-		 (x : xs) -> do
-			json $ Response
-				{title = show (length xs)
-				, classes = getNamesFromSchedule x
-				, calendar = []
-				, exams = []
-				}
-			liftIO $ putStrLn "Correctly sent back response"
+  liftIO $ putStrLn "Parsed JSON successfully"
+  -- #TODO create a getCoursesFromX so you don't need this long conversion
+  case getCoursesBytes (BL8.pack csvData) of
+   Left err -> do
+     status status400
+     text (pack err)
+   Right courses -> do
+    let result = bestSchedule (V.toList courses) (inputToArgs arguments)
+    case result of
+     [] -> do
+      json $ Response
+        {title = "No elements match criteria"
+        , classes = []
+        , calendar = []
+        , exams = []
+      }
+      liftIO $ putStrLn "Sent back with no results matching criteria"
+     (x : xs) -> do
+      json $ Response
+        {title = show (length xs)
+        , classes = getNamesFromSchedule x
+        , calendar = getWeekSchedule x
+        , exams = []
+        }
+      liftIO $ putStrLn "Correctly sent back response"
 
 main :: IO ()
 main = scotty 8080 $ do

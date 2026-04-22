@@ -51,8 +51,20 @@ type alias Response =
   { title : String
   , classes : List String
   --#TODO Not actually string, need to implement Day and TimeBlock types here
-  , calendar : List (List String)
+  , calendar : List (List TimeBlock)
   , exams : List String
+  }
+
+type alias TimeOfDay =
+  { hour : Int --#TODO find better type to represent this
+  , minute : Int
+  }
+
+type alias TimeBlock =
+  { weekday : Maybe Day
+  , day : Maybe String -- Exam date, unimplemented for now
+  , startTime : TimeOfDay
+  , endTime : TimeOfDay
   }
 
 emptyResponse : Response
@@ -79,3 +91,15 @@ dayToString day = case day of
   Fri -> "Friday"
   Sat -> "Saturday"
   Sun -> "Sunday"
+
+
+stringToDay : String -> Maybe Day
+stringToDay day = case day of
+  "Monday" -> Just Mon
+  "Tuesday" -> Just Tue
+  "Wednesday" -> Just Wed
+  "Thursday" -> Just Thu
+  "Friday" -> Just Fri
+  "Saturday" -> Just Sat
+  "Sunday" -> Just Sun
+  _ -> Nothing

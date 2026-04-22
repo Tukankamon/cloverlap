@@ -60,11 +60,39 @@ erroneusResponse err = case err of
   Http.BadStatus code -> "Server error: " ++ String.fromInt code
   Http.BadUrl url -> "Bad URL: " ++ url
 
+timeOfDayDecoder : D.Decoder TimeOfDay
+timeOfDayDecoder =
+  D.string |> D.andThen (\str ->
+    case String.split ":" str of
+      [h, m, _] -> case (String.toInt h, String.toInt m) of
+        (Just hours, Just mins) -> D.succeed {hour = hours, minute = mins}
+        _ -> D.fail ("Could not parse: " ++ str)
+      _ -> D.fail ("Expected HH:MM format from: " ++ str)
+  )
+
+dayDecoder : D.Decoder (Maybe Day)
+dayDecoder = 
+  D.nullable D.string |> D.andThen (\maybeNull ->
+    case maybeNull of
+      Nothing -> D.succeed Nothing
+      Just str -> case stringToDay str of
+          Just day -> D.succeed (Just day)
+          Nothing -> D.fail ("Unkown day: " ++ str)
+  )
+
+timeBlockDecoder : D.Decoder TimeBlock
+timeBlockDecoder =
+  D.map4 TimeBlock
+    (D.field "weekday" dayDecoder)
+    (D.field "day" (D.nullable D.string))
+    (D.field "startTime" timeOfDayDecoder)
+    (D.field "endTime" timeOfDayDecoder)
+
 responseDecoder : D.Decoder Response
 responseDecoder =
   D.map4 Response
     (D.field "title" D.string)
     (D.field "classes" (D.list D.string))
-    (D.field "calendar" (D.list (D.list D.string)))
+    (D.field "calendar" (D.list (D.list timeBlockDecoder)))
     (D.field "exams" (D.list D.string))
 
