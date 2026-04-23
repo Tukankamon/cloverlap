@@ -7,7 +7,7 @@ This program takes a list of possible classes you might want to sign up for next
 # CSV syntax
 As shown in the example.csv. Dates are set either with a weekday or with a day/month, both followed by the start and end times
 
-Empty dates for exams or classes are not parsed (only implemented for time3 and exam3 for now)
+Empty dates for exams or classes are not parsed
 
 Dates for exam can be added via the {date} <startTime> <endTime> format. The starting and end times are optional and will both default to midday (12pm). Both options are shown in the example
 
@@ -58,7 +58,7 @@ Backend sends back a struct with the following fields:
 data Response = Response
 	{ title :: String
 	, classes :: [String]
-	, calendar :: [[TimeBlock]]
+	, calendar :: Schedule
 	, exams :: [Day]
 	} deriving (Show, Generic)
 instance ToJSON Response

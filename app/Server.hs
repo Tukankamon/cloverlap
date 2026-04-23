@@ -27,7 +27,7 @@ instance ToJSON Request
 data Response = Response
   { title :: String
   , classes :: [String]
-  , calendar :: [[TimeBlock]] -- #TODO This is wrong, it should send courses not timeBlocks
+  , calendar :: Schedule
   , tests :: [Day]
   } deriving (Show, Generic)
 instance ToJSON Response
@@ -52,13 +52,14 @@ handleResponse (Request csvData arguments) = do
       }
       liftIO $ putStrLn "Sent back with no results matching criteria"
      (x : xs) -> do
-      json $ Response
-        {title = show (length xs)
-        , classes = getNamesFromSchedule x
-        , calendar = getWeekSchedule x
-        , tests = []
-        }
-      liftIO $ putStrLn "Correctly sent back response"
+      let response = Response
+            { title = show (length xs) -- Overlap might be wrong bc this number is way too high
+            , classes = getNamesFromSchedule x
+            , calendar = x
+            , tests = []
+            }
+      json response
+      liftIO $ putStrLn $ "Correctly sent back response:\n" ++ show response
 
 main :: IO ()
 main = scotty 8080 $ do

@@ -95,9 +95,10 @@ interactive model = div
   ]
 
 headerText : Response -> Html Msg
-headerText r = case List.length r.classes of
-  1 -> text "Only one optimal configuration of classes was found with your requirements:"
-  n -> text ("The following classes are the most optimal for your requirements with " ++ String.fromInt (n-1) ++ " other configurations possible:")
+headerText r = case String.toInt r.title of
+  Just 1 -> text "Only one optimal configuration of classes was found with your requirements:"
+  Just n -> text ("The following classes are the most optimal for your requirements with " ++ String.fromInt (n - 1) ++ " other configurations possible:")
+  Nothing -> text "Error parsing response"
 
 -- #TODO make result prettier
 showResult : Model -> Html Msg

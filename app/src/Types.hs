@@ -62,8 +62,10 @@ instance ToJSON TimeBlock where
 
 -- #TODO find alternative for "String"
 getBlocksFromCourse :: Course -> String -> [TimeBlock]
-getBlocksFromCourse course "times" = catMaybes $ times course
-getBlocksFromCourse course "exams" = catMaybes $ exams course
+getBlocksFromCourse course key = case key of
+  "times" -> catMaybes $ times course
+  "exams" -> catMaybes $ times course
+  _ -> []
 
 -- Unused, delete when necesarry
 getDaysFromCourse :: Course -> [DayOfWeek]

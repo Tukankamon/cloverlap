@@ -47,12 +47,13 @@ defaultArgs =
     , loosen = False
     }
 
-type alias Response =
-  { title : String
-  , classes : List String
-  --#TODO Not actually string, need to implement Day and TimeBlock types here
-  , calendar : List (List TimeBlock)
-  , tests : List String
+type alias Schedule = List Course
+type alias Course =
+  { name : String
+  , semester : Int
+  , times : Blocks
+  , exams : Blocks
+  , priority : Int
   }
 
 type alias TimeOfDay =
@@ -60,6 +61,14 @@ type alias TimeOfDay =
   , minute : Int
   }
 
+-- Read comment on the haskell equivalent
+getBlocksFromCourse : Course -> String -> List TimeBlock
+getBlocksFromCourse course key = case key of
+  "times" -> course.times
+  "exams" -> course.exams
+  _ -> []
+
+type alias Blocks = List TimeBlock
 type alias TimeBlock =
   { name : String
   , weekday : Maybe Day
@@ -77,6 +86,14 @@ noon = oclock 12
 testBlock : TimeBlock
 testBlock =
   {name = "test", weekday = Just Mon, day = Nothing, startTime = noon, endTime = oclock 13}
+
+type alias Response =
+  { title : String
+  , classes : List String
+  , calendar : Schedule
+  --#TODO Not actually string, need to implement Day and TimeBlock types here
+  , tests : List String
+  }
 
 emptyResponse : Response
 emptyResponse = Response "" [] [] []
