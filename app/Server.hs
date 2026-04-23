@@ -28,7 +28,7 @@ data Response = Response
   { title :: String
   , classes :: [String]
   , calendar :: [[TimeBlock]] -- #TODO This is wrong, it should send courses not timeBlocks
-  , exams :: [Day]
+  , tests :: [Day]
   } deriving (Show, Generic)
 instance ToJSON Response
 
@@ -48,7 +48,7 @@ handleResponse (Request csvData arguments) = do
         {title = "No elements match criteria"
         , classes = []
         , calendar = []
-        , exams = []
+        , tests = []
       }
       liftIO $ putStrLn "Sent back with no results matching criteria"
      (x : xs) -> do
@@ -56,7 +56,7 @@ handleResponse (Request csvData arguments) = do
         {title = show (length xs)
         , classes = getNamesFromSchedule x
         , calendar = getWeekSchedule x
-        , exams = []
+        , tests = []
         }
       liftIO $ putStrLn "Correctly sent back response"
 

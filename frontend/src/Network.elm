@@ -101,5 +101,5 @@ responseDecoder =
     (D.field "title" D.string)
     (D.field "classes" (D.list D.string))
     (D.field "calendar" (D.list (D.list timeBlockDecoder)))
-    (D.field "exams" (D.list D.string))
+    (D.field "tests" (D.list D.string))
 

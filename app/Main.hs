@@ -73,8 +73,7 @@ flags =
 
 -- #TODO improve function name
 opts :: ParserInfo Args
-opts =
- info
+opts = info
   (flags <**> helper)
   ( fullDesc
      <> progDesc "Compute the most optimal class schedule from a list of courses"

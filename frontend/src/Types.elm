@@ -52,7 +52,7 @@ type alias Response =
   , classes : List String
   --#TODO Not actually string, need to implement Day and TimeBlock types here
   , calendar : List (List TimeBlock)
-  , exams : List String
+  , tests : List String
   }
 
 type alias TimeOfDay =

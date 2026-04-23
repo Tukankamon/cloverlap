@@ -9,16 +9,14 @@ import Data.Sort
 import Data.Time
 import GHC.Generics (Generic)
 
+type Blocks = [Maybe TimeBlock]
+
 -- Consider adding Maybes to the other timeblocks aswell
 data Course = Course
  { name :: !String
  , semester :: !Int
- , time1 :: !TimeBlock
- , time2 :: !TimeBlock
- , time3 :: Maybe TimeBlock
- , exam1 :: !TimeBlock
- , exam2 :: !TimeBlock
- , exam3 :: Maybe TimeBlock
+ , times :: !Blocks
+ , exams :: !Blocks
  , skip_class :: !Bool
  , priority :: !Integer
  }
@@ -29,12 +27,8 @@ instance ToJSON Course where
   object
    [ "name" .= name c
    , "semester" .= semester c
-   , "time1" .= time1 c
-   , "time2" .= time2 c
-   , "time3" .= time3 c
-   , "exam1" .= exam1 c
-   , "exam2" .= exam2 c
-   , "exam3" .= exam3 c
+   , "times" .= times c
+   , "exams" .= exams c
    , "skip_class" .= skip_class c
    , "priority" .= priority c
    ]
@@ -66,29 +60,27 @@ instance ToJSON TimeBlock where
    , "endTime" .= show et
    ]
 
-getBlockFromCourse :: Course -> [TimeBlock]
-getBlockFromCourse course =
- catMaybes [Just $ time1 course, Just $ time2 course, time3 course]
+-- #TODO find alternative for "String"
+getBlocksFromCourse :: Course -> String -> [TimeBlock]
+getBlocksFromCourse course "times" = catMaybes $ times course
+getBlocksFromCourse course "exams" = catMaybes $ exams course
 
 -- Unused, delete when necesarry
 getDaysFromCourse :: Course -> [DayOfWeek]
-getDaysFromCourse course =
- catMaybes [weekday block | block <- blocks]
- where
- blocks = [time1 course, time2 course] ++ maybeToList (time3 course)
+getDaysFromCourse course = catMaybes [weekday block | block <- getBlocksFromCourse course "times"]
 
 getNamesFromSchedule :: Schedule -> [String]
 getNamesFromSchedule xs = map name xs
 
 getCoursesFromDay :: DayOfWeek -> Schedule -> [Course]
 getCoursesFromDay _day list =
- [course | course <- list, Just _day `elem` map weekday (getBlockFromCourse course)]
+ [course | course <- list, Just _day `elem` map weekday (getBlocksFromCourse course "times")]
 
 getDaySchedule :: DayOfWeek -> Schedule -> [TimeBlock]
 getDaySchedule _day list = sort $
   [ block
   | course <- list
-  , block <- getBlockFromCourse course
+  , block <- getBlocksFromCourse course "times"
   , Just _day == weekday block
   ]
 

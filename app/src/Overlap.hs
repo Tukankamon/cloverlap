@@ -32,19 +32,14 @@ removeMirroredPair triples = go [] triples
 coursesOverlap :: Course -> Course -> Args -> [(TimeBlock, TimeBlock)]
 coursesOverlap course1 course2 args = _classOverlap ++ _examOverlap
  where
- classList some_course =
-  case time3 some_course of
-   Just tb -> [time1 some_course, time2 some_course, tb]
-   Nothing -> [time1 some_course, time2 some_course]
+ classList some_course = getBlocksFromCourse some_course "times"
+ examList some_course = getBlocksFromCourse some_course "exams"
 
- examList some_course = case exam3 some_course of
-  Just tb -> [exam1 some_course, exam2 some_course, tb]
-  Nothing -> [exam1 some_course, exam2 some_course]
+ _examOverlap = listsOverlap (examList course1) (examList course2) args
  _classOverlap = case (skip_class course1, skip_class course2) of
   (True, _) -> []
   (_, True) -> []
   (False, False) -> listsOverlap (classList course1) (classList course2) args
- _examOverlap = listsOverlap (examList course1) (examList course2) args
 
 listsOverlap :: [TimeBlock] -> [TimeBlock] -> Args -> [(TimeBlock, TimeBlock)]
 listsOverlap list1 list2 args =

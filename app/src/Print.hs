@@ -6,7 +6,7 @@ module Print (
 )
 where
 
-import Data.Maybe (fromJust, listToMaybe)
+import Data.Maybe (fromJust, listToMaybe, catMaybes)
 import Data.Time
 import Optimize (bestSchedule)
 import Overlap (overlapInList)
@@ -33,21 +33,22 @@ showTimeBlockList :: [TimeBlock] -> String
 showTimeBlockList [] = ""
 showTimeBlockList (first : rest) = showTimeBlock first ++ "\n" ++ showTimeBlockList rest
 
+-- Not the same as above as Blocks havae maybes
+showBlocks :: Blocks -> String
+showBlocks [] = ""
+showBlocks (x:xs) = case x of
+  Just t -> showTimeBlock t ++ ", " ++ showBlocks xs
+  Nothing -> showBlocks xs
+
 -- Bool is verbosity
 showCourse :: Course -> Bool -> String
 showCourse course False = name course
 showCourse course True =
  name course
   ++ " has classes on "
-  ++ showTimeBlock (time1 course)
-  ++ ", "
-  ++ showTimeBlock (time2 course)
-  ++ maybeTimeBlock (time3 course)
+  ++ showBlocks (times course)
   ++ " with exams on "
-  ++ showTimeBlock (exam1 course)
-  ++ ", "
-  ++ showTimeBlock (exam2 course)
-  ++ maybeTimeBlock (exam3 course)
+  ++ showBlocks (exams course)
   ++ ". Will class be attended?: "
   ++ show (skip_class course)
   ++ ". Priority: "

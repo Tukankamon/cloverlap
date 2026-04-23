@@ -14,18 +14,28 @@ import Data.Time
 import qualified Data.Vector as V
 import Types
 
+parseTimes :: NamedRecord -> Parser Blocks
+parseTimes r = sequence
+  [ r .: "time1"
+  , r .: "time2"
+  , r .: "time3"
+  ]
+
+parseExams :: NamedRecord -> Parser Blocks
+parseExams r = sequence
+  [ r .: "exam1"
+  , r .: "exam2"
+  , r .: "exam3"
+  ]
+
 -- Tells how to turn csv into the Class type
 instance FromNamedRecord Course where
  parseNamedRecord r =
   Course
    <$> r .: "name"
    <*> r .: "semester"
-   <*> r .: "time1"
-   <*> r .: "time2"
-   <*> r .: "time3"
-   <*> r .: "exam1"
-   <*> r .: "exam2"
-   <*> r .: "exam3"
+   <*> parseTimes r
+   <*> parseExams r
    <*> r .: "skip_class"
    <*> r .: "priority"
 
