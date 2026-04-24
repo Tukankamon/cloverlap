@@ -100,9 +100,17 @@ headerText r = case String.toInt r.title of
   Just n -> text ("The following classes are the most optimal for your requirements with " ++ String.fromInt (n - 1) ++ " other configurations possible:")
   Nothing -> text "Error parsing response"
 
+viewCourseItem : Course -> Html Msg
+viewCourseItem course =
+  if course.skip_class then
+    li [ style "color" "red" ]
+      [ text (course.name ++ " (not attended)") ]
+  else
+    li [] [ text course.name ]
+
 -- #TODO make result prettier
 showResult : Model -> Html Msg
-showResult model = case model.response.classes of
+showResult model = case model.response.calendar of
   [] -> h2 [] [ text model.response.title ] -- Errors are shown like this
   list -> div []
     [ h2 [] [ headerText model.response ]
@@ -112,7 +120,7 @@ showResult model = case model.response.classes of
       , style "flex-direction" "column"
       --, style "align-items" "center"
       ]
-      (List.map (\elem -> li [] [ text elem ]) list)
+      (List.map viewCourseItem list)
     ]
 
 formatBlock : TimeOfDay -> String
@@ -135,7 +143,10 @@ viewBlock block = div
 
 viewDay : Model -> Day -> Html Msg
 viewDay model day =
-  let schedule = getDaySchedule day model.response.calendar in
+  let
+    filteredCalendar = List.filter (\c -> not c.skip_class) model.response.calendar
+    schedule = getDaySchedule day filteredCalendar
+  in
   div
     [ style "flex" "1"
     , style "background" "var(--color-background-secondary)"

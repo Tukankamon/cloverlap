@@ -53,8 +53,12 @@ type alias Course =
   , semester : Int
   , times : Blocks
   , exams : Blocks
+  , skip_class : Bool
   , priority : Int
   }
+
+getClasses : Schedule -> List String
+getClasses list = List.map .name list
 
 type alias TimeOfDay =
   { hour : Int --#TODO find better type to represent this
@@ -92,7 +96,6 @@ testBlock =
 
 type alias Response =
   { title : String
-  , classes : List String
   , calendar : Schedule
   --#TODO Not actually string, need to implement Day and TimeBlock types here
   , tests : List String
@@ -107,7 +110,7 @@ getDaySchedule day schedule = schedule
   |> List.sortBy (\b -> timeToSecs b.startTime)
 
 emptyResponse : Response
-emptyResponse = Response "" [] [] []
+emptyResponse = Response "" [] []
 
 type Day
   = Mon

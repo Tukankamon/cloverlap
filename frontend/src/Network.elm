@@ -100,20 +100,20 @@ blocksDecoder = D.list (D.nullable timeBlockDecoder)
   |> D.map (List.filterMap identity)
 
 courseDecoder : D.Decoder Course
-courseDecoder = D.map5 Course
+courseDecoder = D.map6 Course
   (D.field "name" D.string)
   (D.field "semester" D.int)
   (D.field "times" blocksDecoder)
   (D.field "exams" blocksDecoder)
+  (D.field "skip_class" D.bool)
   (D.field "priority" D.int)
 
 scheduleDecoder : D.Decoder Schedule
 scheduleDecoder = D.list courseDecoder
 
 responseDecoder : D.Decoder Response
-responseDecoder = D.map4 Response
+responseDecoder = D.map3 Response
   (D.field "title" D.string)
-  (D.field "classes" (D.list D.string))
   (D.field "calendar" scheduleDecoder)
   (D.field "tests" (D.list D.string))
 

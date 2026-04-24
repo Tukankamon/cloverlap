@@ -53,7 +53,7 @@ update msg model =
     TrySend -> case model.file of
       Nothing ->
         ( { model | response =
-          Response "No csv to send! Click 'upload CSV file'" [] [] []
+          Response "No csv to send! Click 'upload CSV file'" [] []
           }
         , Cmd.none )
       Just file ->
@@ -67,7 +67,7 @@ update msg model =
 
     ServerResponded (Err err) ->
       ( { model | response =
-        Response ("Error talking to server " ++ erroneusResponse err) [] [] []
+        Response ("Error talking to server " ++ erroneusResponse err) [] []
         }
       , Cmd.none )
 

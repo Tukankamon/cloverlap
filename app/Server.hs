@@ -23,10 +23,8 @@ data Request = Request
   } deriving (Show, Generic)
 instance FromJSON Request
 instance ToJSON Request
-
 data Response = Response
   { title :: String
-  , classes :: [String]
   , calendar :: Schedule
   , tests :: [Day]
   } deriving (Show, Generic)
@@ -46,7 +44,6 @@ handleResponse (Request csvData arguments) = do
      [] -> do
       json $ Response
         {title = "No elements match criteria"
-        , classes = []
         , calendar = []
         , tests = []
       }
@@ -54,13 +51,12 @@ handleResponse (Request csvData arguments) = do
      (x : xs) -> do
       let response = Response
             { title = show (length xs) -- Overlap might be wrong bc this number is way too high
-            , classes = getNamesFromSchedule x
             , calendar = x
             , tests = []
             }
       json response
-      liftIO $ putStrLn $ "Correctly sent back response:\n" ++ show response
-
+      liftIO $ putStrLn "Correctly sent back response:"
+      --liftIO $ putStrLn $ "Correctly sent back response:\n" ++ show response
 main :: IO ()
 main = scotty 8080 $ do
  middleware $ staticPolicy (addBase "frontend/static")
