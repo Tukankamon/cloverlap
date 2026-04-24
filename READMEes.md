@@ -10,7 +10,11 @@ Este programa toma una lista detallada de posibles clases de universidad en el f
 # Syntaxis para el CSV
 Seguir las cabeceras que se muestran en el ejemplo. Las fechas de clases son del formato: "diaDeSemana horaInicio horaFin" y las de exámenes: "fechaExacta horaInicio horaFin"
 
-Los horarios vacíos no se tienen en cuenta (sólo implementado por ahora para time3 y exam3)
+Los horarios vacíos no se tienen en cuenta
+
+las fechas para los examenes se pueden añadir en el formato: {dia} <horaInicion> <horaFine>. Las horas de comienzo y fin son opcionales y tendrán el valor por defecto de medio día. Ambas opciones se muestran en el ejemplo
+
+Lineas empezadas con '#' serán ignoradas y contarán como comentarios
 
 # Uso
 Esto sólo está en inglés por ahora lamentablemente
@@ -44,9 +48,24 @@ Available options:
 # Nix (flakes)
 El programa se puede ejecutar mediante Nix:
 ```nix
-nix run github:Tukankamon/cloverlap
+nix run github:Tukankamon/cloverlap#<paquete>
 ```
+La opción ```nix <paquete>``` es para elegir entre la versión en la terminal y la version del servidor web. El paquete por defecto es el de la terminal
+
 Para descargártelo permanentemente añádelo a las entradas de tu flake
+
+# Http
+El frontend manda JSON conteniendo el csv y los argumentos (Llamados ArgInput en el backend)
+
+El backend manda de vuelta el siguente struct en forma de JSON:
+```haskell
+data Response = Response
+	{ title :: String
+	, calendar :: Schedule
+	, exams :: [Day]
+	} deriving (Show, Generic)
+instance ToJSON Response
+```
 
 # Cloverlap?
 Viene de class + overlap en inglés. A veces se reduce sólo a clover (trébol)

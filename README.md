@@ -51,13 +51,12 @@ nix run github:Tukankamon/cloverlap#<package>
 To add it to your system configuration add the flake in the repo to your own flake.nix
 
 # Http
-Front end sends JSON containing the csv data and the args (called ArgsInput in the backend)
+Frontend sends JSON containing the csv data and the args (called ArgsInput in the backend)
 
 Backend sends back a struct with the following fields:
 ```haskell
 data Response = Response
 	{ title :: String
-	, classes :: [String]
 	, calendar :: Schedule
 	, exams :: [Day]
 	} deriving (Show, Generic)
