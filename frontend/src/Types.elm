@@ -61,6 +61,9 @@ type alias TimeOfDay =
   , minute : Int
   }
 
+timeToSecs : TimeOfDay -> Int
+timeToSecs t = (60 * t.hour) + t.minute
+
 -- Read comment on the haskell equivalent
 getBlocksFromCourse : Course -> String -> List TimeBlock
 getBlocksFromCourse course key = case key of
@@ -94,6 +97,14 @@ type alias Response =
   --#TODO Not actually string, need to implement Day and TimeBlock types here
   , tests : List String
   }
+
+getDaySchedule : Day -> Schedule -> Blocks
+getDaySchedule day schedule = schedule
+  |> List.concatMap (\course -> 
+    getBlocksFromCourse course "times"
+      |> List.map (\block -> { block | name = course.name }))
+  |> List.filter (\block -> block.weekday == Just day)
+  |> List.sortBy (\b -> timeToSecs b.startTime)
 
 emptyResponse : Response
 emptyResponse = Response "" [] [] []

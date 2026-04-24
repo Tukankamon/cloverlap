@@ -5,7 +5,9 @@ APP_JS := $(STATIC_DIR)/app.js
 
 all: server
 
-$(APP_JS): frontend/src/Main.elm
+ELM_SOURCES := $(shell find frontend/src -name "*.elm")
+
+$(APP_JS): $(ELM_SOURCES)
 	cd frontend && elm make src/Main.elm --output=static/app.js
 
 $(STATIC_DIR):

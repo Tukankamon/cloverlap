@@ -129,32 +129,37 @@ viewBlock block = div
   [ div [style "font-weight" "500", style "font-size" "13px"]
     [ text block.name ]
   , div [style "font-weight" "11px", style "opacity" "0.8", style "margin-top" "2px"]
-    [ text (formatBlock block.startTime) ]
+    [ text ((formatBlock block.startTime) ++ "-" ++ (formatBlock block.endTime))
+    ]
   ]
 
-viewDay : Day -> Html Msg
-viewDay day = div
-  [ style "flex" "1"
-  , style "background" "var(--color-background-secondary)"
-  , style "border-radius" "12px"
-  , style "padding" "12px"
-  , style "display" "flex"
-  , style "flex-direction" "column"
-  , style "gap" "6px"
-  ]
-  [ h3 [] [ text (dayToString day) ]
-  , viewBlock testBlock
-  , viewBlock testBlock
-  ]
+viewDay : Model -> Day -> Html Msg
+viewDay model day =
+  let schedule = getDaySchedule day model.response.calendar in
+  div
+    [ style "flex" "1"
+    , style "background" "var(--color-background-secondary)"
+    , style "border-radius" "12px"
+    , style "padding" "12px"
+    , style "display" "flex"
+    , style "flex-direction" "column"
+    , style "gap" "6px"
+    ]
+    ([ h3 [] [ text (dayToString day) ] ]
+    ++ List.map viewBlock schedule)
+    
 
 --#TODO fix that depending on week day name length the calendar changes size
-viewWeek : Html Msg
-viewWeek = div
+viewWeek : Model -> Html Msg
+viewWeek model = div
   [ style "display" "flex"
   , style "flex-direction" "row"
   , style "gap" "32px"
   ]
-  (List.map viewDay week)
+  (week
+  -- Inefficient since getDaySchedule happens twice
+  |> List.filter (\day -> getDaySchedule day model.response.calendar /= [])
+  |> List.map (viewDay model))
 
 
 view : Model -> Html Msg
@@ -168,7 +173,7 @@ view model = div
   [ h1 [] [text "Cloverlap"]
   , interactive model
   , showResult model
-  , viewWeek
+  , viewWeek model
   ]
 
 dropDecoder : D.Decoder Msg

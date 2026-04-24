@@ -1,6 +1,7 @@
 {
 	inputs = {
-		nixpkgs.url = "nixpkgs/nixos-unstable";
+    #nixpkgs.url = "nixpkgs/nixos-25.11";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
 		# Easier elm packaging
 		mkElmDerivation = {
 			url = "github:jeslie0/mkElmDerivation";
@@ -65,8 +66,8 @@
 					elm-review
         ]);
         shellHook = ''
-					fish
-					set SHELL $(which fish)
+					exec fish
+          #set SHELL $(which fish)
         '';
       };
 
