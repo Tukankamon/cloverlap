@@ -47,6 +47,13 @@ data TimeBlock = TimeBlock
  }
  deriving (Eq, Show, Generic)
 
+blockListLength :: [TimeBlock] -> DiffTime
+blockListLength xs = foldr (\first -> (+) (diffTimeOfDay (endTime first) (startTime first))) 0 xs
+
+-- Library doesnt already have one
+diffTimeOfDay :: TimeOfDay -> TimeOfDay -> DiffTime
+diffTimeOfDay t1 t2 = timeOfDayToTime t1 - timeOfDayToTime t2
+
 instance Ord TimeBlock where
  (TimeBlock _ _ start1 end1) `compare` (TimeBlock _ _ start2 end2) =
   (start1, end1) `compare` (start2, end2)
@@ -64,7 +71,7 @@ instance ToJSON TimeBlock where
 getBlocksFromCourse :: Course -> String -> [TimeBlock]
 getBlocksFromCourse course key = case key of
   "times" -> catMaybes $ times course
-  "exams" -> catMaybes $ times course
+  "exams" -> catMaybes $ exams course
   _ -> []
 
 -- Unused, delete when necesarry
@@ -88,6 +95,9 @@ getDaySchedule _day list = sort $
 
 getWeekSchedule :: Schedule -> [[TimeBlock]]
 getWeekSchedule schedule = [getDaySchedule _day schedule | _day <- [Monday .. Sunday]]
+
+week :: [DayOfWeek]
+week = [Monday .. Sunday]
 
 -- #TODO make it so it is impossible for a timeblock to be both
 isExam :: TimeBlock -> Maybe Bool

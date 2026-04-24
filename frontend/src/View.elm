@@ -96,8 +96,8 @@ interactive model = div
 
 headerText : Response -> Html Msg
 headerText r = case String.toInt r.title of
-  Just 1 -> text "Only one optimal configuration of classes was found with your requirements:"
-  Just n -> text ("The following classes are the most optimal for your requirements with " ++ String.fromInt (n - 1) ++ " other configurations possible:")
+  Just 0 -> text "Only one optimal configuration of classes was found with your requirements:"
+  Just n -> text ("The following classes are the most optimal for your requirements with " ++ String.fromInt n ++ " other configurations possible:")
   Nothing -> text "Error parsing response"
 
 viewCourseItem : Course -> Html Msg
@@ -165,7 +165,7 @@ viewWeek : Model -> Html Msg
 viewWeek model = div
   [ style "display" "flex"
   , style "flex-direction" "row"
-  , style "gap" "32px"
+  , style "gap" "16px"
   ]
   (week
   -- Inefficient since getDaySchedule happens twice

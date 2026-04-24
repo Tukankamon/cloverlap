@@ -15,13 +15,25 @@ bestSchedule set args = case generateAllCombinations set args of
  where
  -- Add more conditions as needed
  -- #TODO make it so it is not so ordered in importance by priority, downtime, length rather take all of them into account at once
- downtimeOrdering :: Schedule -> Schedule -> Ordering
- downtimeOrdering s1 s2
-  | computePriority s1 < computePriority s2 = GT
-  | computePriority s1 > computePriority s2 = LT
-  | weekDowntimePerClass s1 < weekDowntimePerClass s2 = GT
-  | weekDowntimePerClass s1 > weekDowntimePerClass s2 = LT
-  | otherwise = EQ
+downtimeOrdering s1 s2 =
+  compareDescending computePriority
+  <> compareDescending weekDowntimePerClass
+  <> compareDescending dayHoursSV
+  where
+  compareDescending f = compare (f s2) (f s1)
+
+dayHours :: Schedule -> DayOfWeek -> Double
+dayHours s d = fromIntegral $ diffTimeToPicoseconds $ blockListLength (getDaySchedule d s)
+
+-- Standard variation (not quite since it uses abs instead of squaring)
+dayHoursSV :: Schedule -> Double
+dayHoursSV s = sum (map (\_day -> abs (dayHours s _day - mean)) activeDays) / len
+  where
+  weekHours = map (dayHours s) week
+  -- Inefficient, dayHours called twice
+  activeDays = filter (\d -> dayHours s d >0) week
+  len = fromIntegral $ length activeDays
+  mean = sum weekHours / len
 
 kSubsequence :: Int -> [a] -> [[a]]
 kSubsequence 0 _ = [[]]
@@ -41,7 +53,7 @@ generateAllCombinations list args =
   min = minClasses args 
 
 computePriority :: Schedule -> Integer
-computePriority schedule = sum [priority course | course <- schedule]
+computePriority schedule = sum $ map priority schedule
 
 -- Doesnt apply for exams
 computeAttendance :: Schedule -> Integer
@@ -52,7 +64,7 @@ weekDowntimePerClass :: Schedule -> Maybe Double
 weekDowntimePerClass [] = Nothing
 weekDowntimePerClass list =
  let
-  totalDowntime = sum [computeDowntime _day list | _day <- [Monday .. Sunday]]
+  totalDowntime = sum [computeDowntime _day list | _day <- week]
   numberOfClasses = length list
   in
   Just (fromIntegral totalDowntime / fromIntegral numberOfClasses)
@@ -66,9 +78,3 @@ computeDowntime _day list = case getDaySchedule _day list of
    _first = x
    _last = last $ x : xs
 
-blockListLength :: [TimeBlock] -> DiffTime
-blockListLength xs = foldr (\first -> (+) (diffTimeOfDay (endTime first) (startTime first))) 0 xs
-
--- Library doesnt already have one
-diffTimeOfDay :: TimeOfDay -> TimeOfDay -> DiffTime
-diffTimeOfDay t1 t2 = timeOfDayToTime t1 - timeOfDayToTime t2

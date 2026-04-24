@@ -124,7 +124,7 @@ showDaySchedule _day list args
 
 showWeekSchedule :: Schedule -> Args -> String
 showWeekSchedule schedule args =
- unwords [showDaySchedule _day schedule args | _day <- [Monday .. Sunday]]
+ unwords [showDaySchedule _day schedule args | _day <- week]
 
 -- Can this be done without a counter?
 showWeekSchedules :: [Schedule] -> Integer -> Args -> String

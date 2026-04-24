@@ -56,7 +56,7 @@ handleResponse (Request csvData arguments) = do
             }
       json response
       liftIO $ putStrLn "Correctly sent back response:"
-      --liftIO $ putStrLn $ "Correctly sent back response:\n" ++ show response
+      liftIO $ putStrLn $ show response
 main :: IO ()
 main = scotty 8080 $ do
  middleware $ staticPolicy (addBase "frontend/static")
