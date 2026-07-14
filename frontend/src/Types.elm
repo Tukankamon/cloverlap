@@ -109,6 +109,30 @@ getDaySchedule day schedule = schedule
   |> List.filter (\block -> block.weekday == Just day)
   |> List.sortBy (\b -> timeToSecs b.startTime)
 
+allExamBlocks : Schedule -> List TimeBlock
+allExamBlocks schedule = schedule
+  |> List.concatMap (\course ->
+      getBlocksFromCourse course "exams"
+        |> List.map (\block -> { block | name = course.name }))
+
+dedupe : List String -> List String
+dedupe list = case list of
+  [] -> []
+  x :: rest ->
+    x :: dedupe (List.filter ((/=) x) rest)
+
+-- #TODO sort the result
+getExamDates : Schedule -> List String
+getExamDates schedule = allExamBlocks schedule
+  |> List.filterMap .day
+  |> dedupe
+  |> List.sort
+
+getExamSchedule : String -> Schedule -> Blocks
+getExamSchedule dateStr schedule = allExamBlocks schedule
+    |> List.filter (\block -> block.day == Just dateStr)
+    |> List.sortBy (\b -> timeToSecs b.startTime)
+
 emptyResponse : Response
 emptyResponse = Response "" [] []
 

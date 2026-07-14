@@ -172,6 +172,59 @@ viewWeek model = div
   |> List.filter (\day -> getDaySchedule day model.response.calendar /= [])
   |> List.map (viewDay model))
 
+viewExamBlock : TimeBlock -> Html Msg
+viewExamBlock block = div
+  [ style "background" "#e8f0fd"
+  , style "border-radius" "8px"
+  , style "padding" "8px 10px"
+  ]
+  ([ div [style "font-weight" "500", style "font-size" "13px"]
+      [ text block.name ]
+   ]
+  -- If no exam TIMES are provided they are filled with 12:00 - 12:00 in the backend
+  ++ (if block.startTime == block.endTime then
+        []
+      else
+        [ div [style "font-weight" "11px", style "opacity" "0.8", style "margin-top" "2px"]
+            [ text ((formatBlock block.startTime) ++ "-" ++ (formatBlock block.endTime)) ]
+        ]
+     )
+  )
+
+viewExamDay : Model -> String -> Html Msg
+viewExamDay model dateStr =
+  let
+    examBlocks = getExamSchedule dateStr model.response.calendar
+  in
+  div
+    [ style "flex" "1"
+    , style "background" "var(--color-background-secondary)"
+    , style "border-radius" "12px"
+    , style "padding" "12px"
+    , style "display" "flex"
+    , style "flex-direction" "column"
+    , style "gap" "6px"
+    ]
+    ([ h3 [] [ text dateStr ] ]
+    ++ List.map viewExamBlock examBlocks)
+
+viewExams : Model -> Html Msg
+viewExams model =
+  let
+    dates = getExamDates model.response.calendar
+  in
+  if List.isEmpty dates then
+    text ""
+  else
+    div []
+      [ h2 [] [ text "Exams" ]
+      , div
+        [ style "display" "flex"
+        , style "flex-direction" "row"
+        , style "gap" "16px"
+        ]
+        (List.map (viewExamDay model) dates)
+      ]
 
 view : Model -> Html Msg
 view model = div
@@ -185,6 +238,7 @@ view model = div
   , interactive model
   , showResult model
   , viewWeek model
+  , viewExams model
   ]
 
 dropDecoder : D.Decoder Msg

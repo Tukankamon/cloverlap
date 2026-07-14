@@ -65,3 +65,7 @@ instance ToJSON Response
 
 # Cloverlap?
 Comes from class + overlap, can sometimes be shortened to clover
+
+# TODO
+- Exam calendar below classes in a more readable format
+- List of contradictions in the calendar
