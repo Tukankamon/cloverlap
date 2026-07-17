@@ -39,8 +39,8 @@ type alias Args =
 
 defaultArgs : Args
 defaultArgs =
-    { classRest = 10
-    , examRest = 1
+    { classRest = 0
+    , examRest = 0
     , maxClasses = 8
     , minClasses = 5
     , trimester = 1
@@ -169,3 +169,12 @@ stringToDay day = case day of
   "Saturday" -> Just Sat
   "Sunday" -> Just Sun
   _ -> Nothing
+
+numToMonth : String -> String
+numToMonth s = case s of
+  "01" -> "January"
+  "02" -> "February"
+  "06" -> "June"
+  "07" -> "July"
+  "10" -> "October"
+  _ -> "Other"

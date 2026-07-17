@@ -191,10 +191,19 @@ viewExamBlock block = div
      )
   )
 
-viewExamDay : Model -> String -> Html Msg
-viewExamDay model dateStr =
+getMonth : String -> String
+getMonth date = case String.split "-" date of
+  [_,m,_] -> m
+  _ -> "Month parsing error"
+
+viewExamDay : (Blocks, String) -> Html Msg
+viewExamDay (examBlocks, dateStr) =
   let
-    examBlocks = getExamSchedule dateStr model.response.calendar
+    date = case String.split "-" dateStr of
+      [ _, month, day ] ->
+          day ++ "/" ++ month
+      _ ->
+          "Error parsing date"
   in
   div
     [ style "flex" "1"
@@ -205,25 +214,54 @@ viewExamDay model dateStr =
     , style "flex-direction" "column"
     , style "gap" "6px"
     ]
-    ([ h3 [] [ text dateStr ] ]
+    ([ h3 [] [ text date ] ]
     ++ List.map viewExamBlock examBlocks)
+
+viewExamMonth : Model -> String -> Html Msg
+viewExamMonth model month = 
+  let
+    pairs = getExamDates model.response.calendar
+      |> List.map (\date ->
+          ( getExamSchedule date model.response.calendar
+          , date
+          )
+      )
+    filtered = List.filter (\(_,dateStr) -> getMonth dateStr == month) pairs
+  in
+  div
+    [ style "display" "flex"
+    , style "flex-direction" "column"
+    , style "gap" "16px"
+    ]
+    [ h3 [ style "text-align" "center" ] [ text (numToMonth month)]
+    , div
+      [ style "display" "flex"
+      , style "flex-direction" "row"
+      , style "gap" "16px"
+      ]
+      (List.map viewExamDay filtered)
+    ]
 
 viewExams : Model -> Html Msg
 viewExams model =
   let
     dates = getExamDates model.response.calendar
+    months = 
+      [ "01", "02", "03", "04", "05", "06"
+      , "07", "08", "09", "10", "11", "12"
+      ]
   in
   if List.isEmpty dates then
     text ""
   else
     div []
-      [ h2 [] [ text "Exams" ]
+      [ h2 [ style "text-align" "center" ] [ text "Exams" ]
       , div
         [ style "display" "flex"
-        , style "flex-direction" "row"
+        , style "flex-direction" "column"
         , style "gap" "16px"
         ]
-        (List.map (viewExamDay model) dates)
+        (List.map (viewExamMonth model) months)
       ]
 
 view : Model -> Html Msg
