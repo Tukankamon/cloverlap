@@ -37,7 +37,8 @@ dayHoursSV s = sum (map (\_day -> abs (dayHours s _day - mean)) activeDays) / le
 
 kSubsequence :: Int -> [a] -> [[a]]
 kSubsequence 0 _ = [[]]
-kSubsequence _ [] = [[]]
+-- By having this an empty list, its creates exact ksubsequences but cant range from min to max which might be intended behaviour
+kSubsequence _ [] = []
 kSubsequence k (x:xs) = kSubsequence k xs ++ map (x:) (kSubsequence (k-1) xs)
 
 generateAllCombinations :: Schedule -> Args -> [Schedule]

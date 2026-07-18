@@ -50,7 +50,7 @@ handleResponse (Request csvData arguments) = do
       liftIO $ putStrLn "Sent back with no results matching criteria"
      (x : xs) -> do
       let response = Response
-            { title = show (length xs) -- Overlap might be wrong bc this number is way too high
+            { title = show (length xs)
             , calendar = x
             , tests = []
             }
